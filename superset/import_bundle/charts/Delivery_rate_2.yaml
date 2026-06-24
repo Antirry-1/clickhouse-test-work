@@ -1,0 +1,18 @@
+slice_name: Delivery rate
+description: null
+certified_by: null
+certification_details: null
+viz_type: big_number_total
+params:
+  datasource: 1__table
+  row_limit: 10000
+  adhoc_filters: []
+  viz_type: big_number_total
+  metric: delivery_rate_pct
+  granularity_sqla: sent_date
+  subheader: '% delivered (DELIVRD)'
+query_context: null
+cache_timeout: null
+uuid: 61afabb0-a360-4b4b-ab28-ab86926be910
+version: 1.0.0
+dataset_uuid: 77a9edc1-b029-4d52-b0b3-6db544b36fc1

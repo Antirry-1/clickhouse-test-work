@@ -1,0 +1,20 @@
+# Force LF everywhere so shell scripts keep Unix line endings even when the repo is
+# checked out on Windows. Without this, git autocrlf can turn *.sh into CRLF, and bash
+# inside the Linux containers fails with `\r: bad interpreter` / `set: -\r: invalid option`.
+* text=auto eol=lf
+
+# Be explicit for the files that MUST be LF (they run inside Linux containers):
+*.sh        text eol=lf
+*.py        text eol=lf
+*.sql       text eol=lf
+*.yml       text eol=lf
+*.yaml      text eol=lf
+Dockerfile  text eol=lf
+Makefile    text eol=lf
+.env.example text eol=lf
+
+# Binary assets must never be normalized:
+*.png binary
+*.jpg binary
+*.zip binary
+*.tgz binary

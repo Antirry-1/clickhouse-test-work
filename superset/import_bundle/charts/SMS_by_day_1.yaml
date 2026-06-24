@@ -1,0 +1,22 @@
+slice_name: SMS by day
+description: null
+certified_by: null
+certification_details: null
+viz_type: echarts_timeseries_line
+params:
+  datasource: 1__table
+  row_limit: 10000
+  adhoc_filters: []
+  viz_type: echarts_timeseries_line
+  x_axis: sent_date
+  time_grain_sqla: P1D
+  metrics:
+  - count_messages
+  groupby: []
+  x_axis_sort_asc: true
+  show_legend: true
+query_context: null
+cache_timeout: null
+uuid: 73178ea9-eb33-4d45-9e65-9be54db613d6
+version: 1.0.0
+dataset_uuid: 77a9edc1-b029-4d52-b0b3-6db544b36fc1

@@ -1,0 +1,19 @@
+slice_name: Top operators
+description: null
+certified_by: null
+certification_details: null
+viz_type: pie
+params:
+  datasource: 1__table
+  row_limit: 10
+  adhoc_filters: []
+  viz_type: pie
+  metric: count_messages
+  groupby:
+  - receiver_operator
+  granularity_sqla: sent_date
+query_context: null
+cache_timeout: null
+uuid: d4522f22-4d2f-4f16-bcea-d9599010b79c
+version: 1.0.0
+dataset_uuid: 77a9edc1-b029-4d52-b0b3-6db544b36fc1

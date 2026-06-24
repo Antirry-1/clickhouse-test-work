@@ -1,0 +1,20 @@
+# Конфиг инструментов для скриптов данных (ruff + mypy). Системы сборки нет — это
+# самостоятельные скрипты, запускаемые через docker compose / `python scripts/...`, не пакет.
+[tool.ruff]
+line-length = 100          # соответствует существующему стилю кода; см. scripts/*.py
+target-version = "py312"
+extend-exclude = [".claude"]   # агентский/skill-тулинг, не исходники проекта
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "UP", "B", "BLE", "C4", "SIM"]
+
+[tool.mypy]
+python_version = "3.12"
+files = ["scripts", "superset"]
+# clickhouse_connect и superset не поставляют type stubs; не падаем на их импортах.
+ignore_missing_imports = true
+# scripts/ и superset/ — плоские каталоги модулей верхнего уровня (test_generate импортирует
+# generate_data). Добавление обоих в mypy_path также не даёт локальной папке superset/
+# затенять настоящую библиотеку `superset`, которую register_db.py импортирует в контейнере.
+explicit_package_bases = true
+mypy_path = "scripts:superset"

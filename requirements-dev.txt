@@ -1,0 +1,7 @@
+# Инструменты только для разработки: линт + проверка типов Python-скриптов.
+# Конфиг — в pyproject.toml.
+# Установка:  pip install -r requirements.txt -r requirements-dev.txt
+# Запуск:     ruff check .   &&   mypy
+ruff==0.15.19
+mypy==2.1.0
+types-requests==2.33.0.20260518   # stubs для использования `requests` в build_dashboard.py

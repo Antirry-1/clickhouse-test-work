@@ -1,0 +1,180 @@
+# SMS Operations mart — full stack.
+#
+#   docker compose up -d
+#
+# brings up ClickHouse + Superset AND runs the one-shot jobs in order:
+#   clickhouse-init (DDL) -> generator (1M rows) -> superset-init (admin + DB conn)
+#   -> superset (web) -> superset-dashboard (builds the dashboard via REST API)
+#
+# The one-shot jobs exit when done; the long-running services (clickhouse, superset) stay up.
+# Re-running `up` is idempotent: the generator skips if the table already has >= target rows.
+
+services:
+  # ─────────────────────────── ClickHouse (long-running) ──────────────────────
+  clickhouse:
+    image: clickhouse/clickhouse-server:${CLICKHOUSE_IMAGE_TAG:-24.8}
+    container_name: sms_clickhouse
+    environment:
+      CLICKHOUSE_DB: ${CLICKHOUSE_DB:-sms}
+      CLICKHOUSE_USER: ${CLICKHOUSE_USER:-default}
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-clickhouse}
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+    ports:
+      - "${CLICKHOUSE_HTTP_PORT:-8123}:8123"
+      - "${CLICKHOUSE_NATIVE_PORT:-9000}:9000"
+    ulimits:
+      nofile: { soft: 262144, hard: 262144 }
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8123/ping | grep -q Ok"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+  # ─────────────────── One-shot: create DB + table + view (DDL) ────────────────
+  clickhouse-init:
+    image: clickhouse/clickhouse-server:${CLICKHOUSE_IMAGE_TAG:-24.8}
+    container_name: sms_clickhouse_init
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+    environment:
+      CLICKHOUSE_HOST: clickhouse
+      CLICKHOUSE_NATIVE_PORT: "9000"
+      CLICKHOUSE_USER: ${CLICKHOUSE_USER:-default}
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-clickhouse}
+    entrypoint: ["bash", "/scripts/init_clickhouse.sh"]
+    volumes:
+      - ./scripts:/scripts:ro
+      - ./ddl:/ddl:ro
+    restart: "no"
+
+  # ─────────────────── One-shot: generate 1M rows (Python) ─────────────────────
+  generator:
+    build:
+      context: .
+      dockerfile: scripts/generator.Dockerfile
+    image: sms-generator:local
+    container_name: sms_generator
+    depends_on:
+      clickhouse-init:
+        condition: service_completed_successfully
+    environment:
+      CLICKHOUSE_HOST: clickhouse
+      CLICKHOUSE_HTTP_PORT: "8123"
+      CLICKHOUSE_DB: ${CLICKHOUSE_DB:-sms}
+      CLICKHOUSE_USER: ${CLICKHOUSE_USER:-default}
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-clickhouse}
+      GEN_ROWS: ${GEN_ROWS:-1000000}
+      GEN_START: ${GEN_START:-2025-01-01}
+      GEN_END: ${GEN_END:-2026-01-01}
+      GEN_BATCH: ${GEN_BATCH:-50000}
+      GEN_SEED: ${GEN_SEED:-42}
+      PIP_DISABLE_PIP_VERSION_CHECK: "1"
+    working_dir: /work
+    entrypoint:
+      - bash
+      - -lc
+      - >
+        python scripts/generate_data.py
+        --rows "$${GEN_ROWS}" --start-date "$${GEN_START}" --end-date "$${GEN_END}"
+        --batch-size "$${GEN_BATCH}" --seed "$${GEN_SEED}"
+    volumes:
+      - ./:/work:ro
+    restart: "no"
+
+  # ─────────────────────────── Superset (long-running) ─────────────────────────
+  superset:
+    build:
+      context: ./superset
+      dockerfile: Dockerfile
+      args:
+        SUPERSET_IMAGE_TAG: ${SUPERSET_IMAGE_TAG:-4.1.1}
+    image: sms-superset:${SUPERSET_IMAGE_TAG:-4.1.1}
+    container_name: sms_superset
+    depends_on:
+      superset-init:
+        condition: service_completed_successfully
+    environment:
+      SUPERSET_SECRET_KEY: ${SUPERSET_SECRET_KEY:-CHANGE_ME_local_dev_secret_key_0123456789abcdef}
+      SUPERSET_CONFIG_PATH: /app/pythonpath/superset_config.py
+    ports:
+      - "${SUPERSET_PORT:-8088}:8088"
+    volumes:
+      - ./superset/superset_config.py:/app/pythonpath/superset_config.py:ro
+      - superset_home:/app/superset_home
+    command:
+      - gunicorn
+      - --bind=0.0.0.0:8088
+      - --workers=2
+      - --timeout=120
+      - --limit-request-line=0
+      - --limit-request-field_size=0
+      - "superset.app:create_app()"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8088/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+    restart: unless-stopped
+
+  # ──────── One-shot: migrate metadata, create admin, register DB, import dash ──
+  superset-init:
+    build:
+      context: ./superset
+      dockerfile: Dockerfile
+      args:
+        SUPERSET_IMAGE_TAG: ${SUPERSET_IMAGE_TAG:-4.1.1}
+    image: sms-superset:${SUPERSET_IMAGE_TAG:-4.1.1}
+    container_name: sms_superset_init
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+    environment:
+      SUPERSET_SECRET_KEY: ${SUPERSET_SECRET_KEY:-CHANGE_ME_local_dev_secret_key_0123456789abcdef}
+      SUPERSET_CONFIG_PATH: /app/pythonpath/superset_config.py
+      SUPERSET_ADMIN: ${SUPERSET_ADMIN:-admin}
+      SUPERSET_ADMIN_PASSWORD: ${SUPERSET_ADMIN_PASSWORD:-admin}
+      SUPERSET_ADMIN_EMAIL: ${SUPERSET_ADMIN_EMAIL:-admin@example.com}
+      CLICKHOUSE_HOST: clickhouse
+      CLICKHOUSE_HTTP_PORT: "8123"
+      CLICKHOUSE_DB: ${CLICKHOUSE_DB:-sms}
+      CLICKHOUSE_USER: ${CLICKHOUSE_USER:-default}
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-clickhouse}
+    entrypoint: ["bash", "/app/scripts/init_superset.sh"]
+    volumes:
+      - ./superset/superset_config.py:/app/pythonpath/superset_config.py:ro
+      - ./scripts:/app/scripts:ro
+      - ./superset:/app/superset_project:ro
+      - superset_home:/app/superset_home
+    restart: "no"
+
+  # ──────── One-shot: build the SMS Operations dashboard via the Superset API ───
+  superset-dashboard:
+    image: python:3.12-slim
+    container_name: sms_superset_dashboard
+    depends_on:
+      superset:
+        condition: service_healthy
+      generator:
+        condition: service_completed_successfully
+    environment:
+      SUPERSET_URL: http://superset:8088
+      SUPERSET_ADMIN: ${SUPERSET_ADMIN:-admin}
+      SUPERSET_ADMIN_PASSWORD: ${SUPERSET_ADMIN_PASSWORD:-admin}
+      CLICKHOUSE_DB: ${CLICKHOUSE_DB:-sms}
+      PIP_DISABLE_PIP_VERSION_CHECK: "1"
+    working_dir: /work
+    entrypoint:
+      - bash
+      - -lc
+      - "pip install -q requests && python scripts/build_dashboard.py"
+    volumes:
+      - ./:/work:ro
+    restart: "no"
+
+volumes:
+  clickhouse_data:
+  superset_home:

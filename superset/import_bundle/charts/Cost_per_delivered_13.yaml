@@ -1,0 +1,18 @@
+slice_name: Cost per delivered
+description: null
+certified_by: null
+certification_details: null
+viz_type: big_number_total
+params:
+  datasource: 1__table
+  row_limit: 10000
+  adhoc_filters: []
+  viz_type: big_number_total
+  metric: cost_per_delivered
+  granularity_sqla: sent_date
+  subheader: price / delivered
+query_context: null
+cache_timeout: null
+uuid: 9fadeb59-2005-433c-a414-019ed6177978
+version: 1.0.0
+dataset_uuid: 77a9edc1-b029-4d52-b0b3-6db544b36fc1

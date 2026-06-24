@@ -1,0 +1,20 @@
+# Local environment (committed example is .env.example)
+.env
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# OS / editor
+.DS_Store
+*.swp
+
+# Superset local metadata (lives in a docker volume, never commit)
+superset_home/
+*.db
+
+# Do NOT ignore screenshots — they are a required deliverable.
+!screenshots/*.png
+.gstack/

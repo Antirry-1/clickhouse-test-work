@@ -1,0 +1,85 @@
+{
+  "fields": {
+    "customer_id": {
+      "type": "UInt32",
+      "values_from": "customers"
+    },
+    "application_uuid": {
+      "type": "UUID",
+      "values_from": "customers",
+      "paired_with": "customer_id"
+    },
+    "message_id": {
+      "type": "UUID",
+      "generator": "uuid_v4"
+    },
+    "sent_date": {
+      "type": "DateTime64(6)",
+      "min": "2025-01-01 00:00:01",
+      "max": "2026-01-01 00:00:00"
+    },
+    "sender": {
+      "type": "LowCardinality(Nullable(String))",
+      "values": [
+        "Google", "Steam", "Amazon", "PayPal", "Uber", "WhatsApp", "Meta",
+        "Grab", "Airbnb", "Netflix", "LinkedIn", "Outlook", "Twilio", "DHL",
+        "Vodafone", "monitoring", "Spotify", "Bolt", "not_defined"
+      ]
+    },
+    "receiver": {
+      "type": "LowCardinality(Nullable(String))"
+    },
+    "country": {
+      "type": "LowCardinality(Nullable(String))",
+      "values": [
+        "Russian Federation", "Kazakhstan", "Azerbaijan", "Kyrgyzstan", "Tajikistan",
+        "Belarus", "Uzbekistan", "Armenia", "Georgia", "Israel", "Moldova", "Abkhazia",
+        "not_defined"
+      ]
+    },
+    "segment_count": {
+      "type": "UInt32",
+      "min": 1,
+      "max": 14
+    },
+    "delivery_status": {
+      "type": "LowCardinality(Nullable(String))",
+      "values": [
+        "DELIVRD", "UNDELIV", "EXPIRED", "NO ROUTES", "SENT", "ROUTE FAILED",
+        "REJECTD", "VND CHN NOT BND", "SUBMIT_RESP TIMEOUT", "UNKNOWN"
+      ]
+    },
+    "attempt_number": {
+      "type": "UInt8",
+      "min": 1,
+      "max": 3,
+      "values": [1, 2, 3]
+    },
+    "delivery_time": {
+      "type": "UInt16",
+      "min": 100,
+      "max": 3000
+    },
+    "price": {
+      "type": "Float32",
+      "min": 0.0,
+      "max": 1.0
+    },
+    "currency": {
+      "type": "LowCardinality(Nullable(String))",
+      "values": ["EUR", "RUB", "USD"]
+    },
+    "receiver_operator": {
+      "type": "LowCardinality(Nullable(String))",
+      "values": [
+        "MTS", "Beeline", "MegaFon", "Azercell", "MKS", "Tele2", "All networks",
+        "MEGACOM(Alfa Telecom)", "Indigo Tajikistan", "Beeline (Sky Mobile)", "K-Cell",
+        "O!(Nurtelecom)", "Scartel", "MobiUZ (MTS)", "velcom", "Altel", "not_defined"
+      ]
+    },
+    "direction": {
+      "type": "UInt8",
+      "values": [0, 1]
+    }
+  }
+}

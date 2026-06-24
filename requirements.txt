@@ -1,0 +1,6 @@
+# Data generator dependency. clickhouse-connect speaks ClickHouse HTTP (:8123)
+# and provides fast columnar batch inserts (insert_df).
+clickhouse-connect==0.8.18
+# numpy vectorizes the column generation; pandas carries the columnar batch.
+numpy==2.5.0
+pandas==3.0.3

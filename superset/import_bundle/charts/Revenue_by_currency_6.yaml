@@ -1,0 +1,21 @@
+slice_name: Revenue by currency
+description: null
+certified_by: null
+certification_details: null
+viz_type: dist_bar
+params:
+  datasource: 1__table
+  row_limit: 10000
+  adhoc_filters: []
+  viz_type: dist_bar
+  metrics:
+  - revenue
+  groupby:
+  - currency
+  order_desc: true
+  granularity_sqla: sent_date
+query_context: null
+cache_timeout: null
+uuid: 8c6eb6d5-c27d-45cd-bd22-c574818d6b23
+version: 1.0.0
+dataset_uuid: 77a9edc1-b029-4d52-b0b3-6db544b36fc1

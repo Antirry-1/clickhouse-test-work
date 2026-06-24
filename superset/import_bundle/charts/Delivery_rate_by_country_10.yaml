@@ -1,0 +1,21 @@
+slice_name: Delivery rate by country
+description: null
+certified_by: null
+certification_details: null
+viz_type: dist_bar
+params:
+  datasource: 1__table
+  row_limit: 10
+  adhoc_filters: []
+  viz_type: dist_bar
+  metrics:
+  - delivery_rate_pct
+  groupby:
+  - country
+  order_desc: true
+  granularity_sqla: sent_date
+query_context: null
+cache_timeout: null
+uuid: e5ce76c4-b451-4685-bb3d-3fdfbcd1e20e
+version: 1.0.0
+dataset_uuid: 77a9edc1-b029-4d52-b0b3-6db544b36fc1

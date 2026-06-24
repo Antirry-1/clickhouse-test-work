@@ -1,0 +1,300 @@
+table_name: messages_mart_active
+main_dttm_col: sent_date
+description: null
+default_endpoint: null
+offset: 0
+cache_timeout: null
+catalog: null
+schema: sms
+sql: null
+params: null
+template_params: null
+filter_select_enabled: true
+fetch_values_predicate: null
+extra: null
+normalize_columns: false
+always_filter_main_dttm: false
+uuid: 77a9edc1-b029-4d52-b0b3-6db544b36fc1
+metrics:
+- metric_name: failed_rate_pct
+  verbose_name: Failed rate %
+  metric_type: null
+  expression: round(100 * countIf(delivery_status != 'DELIVRD') / count(), 2)
+  description: null
+  d3format: null
+  currency: null
+  extra: null
+  warning_text: null
+- metric_name: delivery_rate_pct
+  verbose_name: Delivery rate %
+  metric_type: null
+  expression: round(100 * avg(delivery_status = 'DELIVRD'), 2)
+  description: null
+  d3format: null
+  currency: null
+  extra: null
+  warning_text: null
+- metric_name: cost_per_delivered
+  verbose_name: Cost per delivered
+  metric_type: null
+  expression: round(sum(price) / countIf(delivery_status = 'DELIVRD'), 4)
+  description: null
+  d3format: null
+  currency: null
+  extra: null
+  warning_text: null
+- metric_name: avg_delivery_time
+  verbose_name: Avg delivery time (ms)
+  metric_type: null
+  expression: round(avg(delivery_time), 0)
+  description: null
+  d3format: null
+  currency: null
+  extra: null
+  warning_text: null
+- metric_name: count_messages
+  verbose_name: SMS count
+  metric_type: null
+  expression: count(message_id)
+  description: null
+  d3format: null
+  currency: null
+  extra: null
+  warning_text: null
+- metric_name: count
+  verbose_name: COUNT(*)
+  metric_type: count
+  expression: COUNT(*)
+  description: null
+  d3format: null
+  currency: null
+  extra: null
+  warning_text: null
+- metric_name: revenue
+  verbose_name: Revenue
+  metric_type: null
+  expression: sum(price)
+  description: null
+  d3format: null
+  currency: null
+  extra: null
+  warning_text: null
+columns:
+- column_name: deleted_at
+  verbose_name: null
+  is_dttm: true
+  is_active: true
+  type: NULLABLE(DATETIME64(6))
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra: null
+- column_name: receiver_operator
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: LOWCARDINALITY(NULLABLE(STRING))
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra: null
+- column_name: delivery_status
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: LOWCARDINALITY(NULLABLE(STRING))
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra: null
+- column_name: currency
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: LOWCARDINALITY(NULLABLE(STRING))
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra: null
+- column_name: receiver
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: LOWCARDINALITY(NULLABLE(STRING))
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra: null
+- column_name: country
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: LOWCARDINALITY(NULLABLE(STRING))
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra: null
+- column_name: sender
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: LOWCARDINALITY(NULLABLE(STRING))
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra: null
+- column_name: created_at
+  verbose_name: null
+  is_dttm: true
+  is_active: true
+  type: DATETIME64(6)
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra: null
+- column_name: updated_at
+  verbose_name: null
+  is_dttm: true
+  is_active: true
+  type: DATETIME64(6)
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra: null
+- column_name: sent_date
+  verbose_name: null
+  is_dttm: true
+  is_active: true
+  type: DATETIME64(6)
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra: null
+- column_name: delivery_time
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: UINT16
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra: null
+- column_name: price
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: FLOAT32
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra: null
+- column_name: customer_id
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: UINT32
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra: null
+- column_name: segment_count
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: UINT32
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra: null
+- column_name: attempt_number
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: UINT8
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra: null
+- column_name: direction
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: UINT8
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra: null
+- column_name: application_uuid
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: UUID
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra: null
+- column_name: message_id
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: UUID
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra: null
+version: 1.0.0
+database_uuid: 1a1a1a1a-0000-4000-8000-000000000001

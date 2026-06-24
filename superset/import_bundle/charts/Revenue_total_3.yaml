@@ -1,0 +1,18 @@
+slice_name: Revenue (total)
+description: null
+certified_by: null
+certification_details: null
+viz_type: big_number_total
+params:
+  datasource: 1__table
+  row_limit: 10000
+  adhoc_filters: []
+  viz_type: big_number_total
+  metric: revenue
+  granularity_sqla: sent_date
+  subheader: sum(price), mixed currency
+query_context: null
+cache_timeout: null
+uuid: 9e047c19-a9eb-4aa7-b956-923e11e05203
+version: 1.0.0
+dataset_uuid: 77a9edc1-b029-4d52-b0b3-6db544b36fc1
