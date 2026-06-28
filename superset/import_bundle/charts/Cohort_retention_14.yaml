@@ -1,0 +1,28 @@
+slice_name: Cohort retention
+description: null
+certified_by: null
+certification_details: null
+viz_type: heatmap_v2
+params:
+  datasource: 2__table
+  viz_type: heatmap_v2
+  x_axis: month_index
+  groupby: cohort_month
+  metric: retention_pct_max
+  row_limit: 10000
+  adhoc_filters: []
+  sort_x_axis: value_asc
+  sort_y_axis: value_asc
+  normalize_across: y
+  legend_type: continuous
+  linear_color_scheme: blue_white_yellow
+  show_values: true
+  value_bounds:
+  - 0
+  - 100
+  y_axis_format: SMART_NUMBER
+query_context: null
+cache_timeout: null
+uuid: 4acc9c45-d929-42c8-8e13-3d0c4647dc83
+version: 1.0.0
+dataset_uuid: d7e2122e-2b11-43af-a076-8c17055bb0c1

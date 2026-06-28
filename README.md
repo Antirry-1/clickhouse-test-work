@@ -19,7 +19,7 @@
   [`ddl/002_create_messages_daily_mv.sql`](ddl/002_create_messages_daily_mv.sql).
 - **1 000 000** реалистичных SMS-строк за период **2025-01-01 … 2026-01-01**.
 - Superset с подключением `ClickHouse SMS` и дашбордом **SMS Operations**:
-  13 графиков + 2 глобальных фильтра (Customer, Sent date).
+  14 графиков (вкл. когортный heatmap) + 2 глобальных фильтра (Customer, Sent date).
 - Объекты Superset, экспортированные в **YAML** (`superset/import_bundle/`) для хранения в git.
 
 ## Требования
@@ -172,6 +172,24 @@ docker compose run --rm -e GEN_TRUNCATE=1 generator \
 
 ---
 
+## Аналитика данных и форматы хранения
+
+Два дополнительных скрипта (обоснование — в [`docs/DESIGN.md`](docs/DESIGN.md), раздел 12):
+
+```bash
+make analyze      # DQ + описательная статистика по messages_mart (нужен поднятый стек)
+                  #   средний/медианный чек SMS, std (n-1 vs n), квартили, выбросы по IQR,
+                  #   сегменты по странам/клиентам, доля NULL/not_defined/soft-delete,
+                  #   + Parquet-отчёт в reports/
+make benchmark    # сравнение CSV/Parquet/Feather по размеру и скорости (БД не нужна)
+make test         # самопроверки генератора и аналитики (БД не нужна)
+```
+
+Чистые функции аналитики покрыты самопроверкой без БД (`scripts/test_analyze.py`):
+математика выбросов по IQR закреплена на проверенном вручную ряде `[1..9, 100]`.
+
+---
+
 ## Пересоздать всё с нуля
 ```bash
 make clean        # остановить контейнеры + удалить тома (данные ClickHouse + метаданные Superset)
@@ -189,8 +207,10 @@ make reset        # = clean + up   (алиас: make rebuild)
 superset/import_bundle/
 ├── metadata.yaml
 ├── databases/ClickHouse_SMS.yaml          # пароль замаскирован (XXXXXXXXXX)
-├── datasets/ClickHouse_SMS/messages_mart_active.yaml
-├── charts/*.yaml                           # 13 графиков
+├── datasets/ClickHouse_SMS/
+│   ├── messages_mart_active.yaml           # физический датасет (13 основных чартов)
+│   └── cohort_retention.yaml               # виртуальный SQL-датасет (когортный heatmap)
+├── charts/*.yaml                           # 14 графиков (вкл. Cohort retention)
 └── dashboards/SMS_Operations_1.yaml        # вкл. native_filter_configuration
 ```
 
@@ -260,13 +280,18 @@ docker compose exec superset superset import-dashboards -p /app/superset_project
 │   └── 002_create_messages_daily_mv.sql   (дневной предагрегат + materialized view)
 ├── dql/                          ← DQL (SELECT-запросы за 13 графиками дашборда)
 │   ├── dashboard_queries.sql              (рабочий SQL по всем чартам + метрикам)
+│   ├── analytics_queries.sql              (оконные функции + CTE)
+│   ├── cohort_lifecycle.sql               (когорты + жизненный цикл)
 │   └── README.md                          (как сделаны графики и где смотреть их SQL)
 ├── scripts/                      ← все запускаемые скрипты
 │   ├── generate_data.py   init_clickhouse.sh   init_superset.sh
-│   └── register_db.py     build_dashboard.py   smoke_test.sh
+│   ├── register_db.py     build_dashboard.py   smoke_test.sh
+│   ├── analyze_data.py    ← DQ + описательная статистика
+│   ├── format_benchmark.py ← сравнение CSV/Parquet/Feather
+│   └── test_generate.py   test_analyze.py      ← самопроверки без БД
 ├── superset/
 │   ├── Dockerfile   superset_config.py
-│   └── import_bundle/            ← объекты Superset в YAML (db, dataset, 13 графиков, дашборд)
+│   └── import_bundle/            ← объекты Superset в YAML (db, 2 датасета, 14 графиков, дашборд)
 ├── screenshots/
 │   └── sms_operations_dashboard.png
 │

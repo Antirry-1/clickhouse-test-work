@@ -13,6 +13,6 @@ params:
   subheader: sum(price), mixed currency
 query_context: null
 cache_timeout: null
-uuid: 9e047c19-a9eb-4aa7-b956-923e11e05203
+uuid: e7c8f2c0-fc78-4d39-a093-4c89ececdf2a
 version: 1.0.0
-dataset_uuid: 77a9edc1-b029-4d52-b0b3-6db544b36fc1
+dataset_uuid: 64857edb-ff1a-4d43-9739-a514bdaefa63

@@ -14,7 +14,7 @@ fetch_values_predicate: null
 extra: null
 normalize_columns: false
 always_filter_main_dttm: false
-uuid: 77a9edc1-b029-4d52-b0b3-6db544b36fc1
+uuid: 64857edb-ff1a-4d43-9739-a514bdaefa63
 metrics:
 - metric_name: failed_rate_pct
   verbose_name: Failed rate %

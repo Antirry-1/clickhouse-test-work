@@ -24,6 +24,28 @@ DB_NAME = "ClickHouse SMS"
 TABLE = "messages_mart_active"
 DASH_TITLE = "SMS Operations"
 
+# Когортный анализ — отдельный ВИРТУАЛЬНЫЙ (SQL) датасет, т.к. retention считается
+# оконными функциями и его не выразить простой метрикой на физической витрине.
+# SQL = запрос №1 из dql/cohort_lifecycle.sql.
+COHORT_TABLE = "cohort_retention"
+COHORT_CHART = "Cohort retention"
+COHORT_SQL = """\
+WITH first_seen AS (
+    SELECT receiver, toStartOfMonth(min(sent_date)) AS cohort_month
+    FROM sms.messages_mart_active WHERE receiver IS NOT NULL GROUP BY receiver),
+activity AS (
+    SELECT f.cohort_month AS cohort_month,
+           dateDiff('month', f.cohort_month, toStartOfMonth(m.sent_date)) AS month_index,
+           m.receiver AS receiver
+    FROM sms.messages_mart_active AS m INNER JOIN first_seen AS f USING (receiver)),
+cohort AS (
+    SELECT cohort_month, month_index, uniqExact(receiver) AS active_receivers
+    FROM activity GROUP BY cohort_month, month_index)
+SELECT cohort_month, month_index, active_receivers,
+       round(100 * active_receivers /
+             first_value(active_receivers) OVER (PARTITION BY cohort_month ORDER BY month_index), 1) AS retention_pct
+FROM cohort"""
+
 s = requests.Session()
 
 
@@ -122,6 +144,64 @@ def ensure_dataset(db_id):
     return ds_id
 
 
+# --- когортный датасет + чарт (виртуальный SQL-датасет) -------------------
+def ensure_cohort_dataset(db_id):
+    existing = find_one("/api/v1/dataset/", "table_name", COHORT_TABLE)
+    if existing:
+        ds_id = existing["id"]
+        api("PUT", f"/api/v1/dataset/{ds_id}", json={"sql": COHORT_SQL})
+        print(f"  cohort dataset exists id={ds_id}")
+    else:
+        ds_id = api("POST", "/api/v1/dataset/",
+                    json={"database": db_id, "schema": SCHEMA,
+                          "table_name": COHORT_TABLE, "sql": COHORT_SQL})["id"]
+        print(f"  cohort dataset created id={ds_id}")
+    full = api("GET", f"/api/v1/dataset/{ds_id}")["result"]
+    cols = [{"id": c["id"], "column_name": c["column_name"], "type": c.get("type"),
+             "is_dttm": c["column_name"] == "cohort_month" or bool(c.get("is_dttm")),
+             "groupby": c.get("groupby", True), "filterable": c.get("filterable", True)}
+            for c in full["columns"]]
+    have = {m["metric_name"] for m in full.get("metrics", [])}
+    metrics = [{"id": m["id"], "metric_name": m["metric_name"], "expression": m["expression"],
+                "verbose_name": m.get("verbose_name")} for m in full.get("metrics", [])]
+    for mn, expr, vn in (("retention_pct_max", "max(retention_pct)", "Retention %"),
+                         ("active_receivers_max", "max(active_receivers)", "Active receivers")):
+        if mn not in have:
+            metrics.append({"metric_name": mn, "expression": expr, "verbose_name": vn})
+    api("PUT", f"/api/v1/dataset/{ds_id}?override_columns=false",
+        json={"metrics": metrics, "columns": cols})
+    return ds_id
+
+
+def cohort_chart_params(ds_id):
+    # heatmap: x = месяц с первого контакта, y = когорта (месяц первого SMS), цвет = retention %.
+    return {
+        "datasource": f"{ds_id}__table", "viz_type": "heatmap_v2",
+        "x_axis": "month_index", "groupby": "cohort_month",
+        "metric": "retention_pct_max",
+        "row_limit": 10000, "adhoc_filters": [],
+        "sort_x_axis": "value_asc", "sort_y_axis": "value_asc",
+        "normalize_across": "y", "legend_type": "continuous",
+        "linear_color_scheme": "blue_white_yellow", "show_values": True,
+        "value_bounds": [0, 100], "y_axis_format": "SMART_NUMBER",
+    }
+
+
+def ensure_cohort_chart(ds_id):
+    params = cohort_chart_params(ds_id)
+    existing = find_one("/api/v1/chart/", "slice_name", COHORT_CHART)
+    body = {"slice_name": COHORT_CHART, "viz_type": params["viz_type"],
+            "datasource_id": ds_id, "datasource_type": "table", "params": json.dumps(params)}
+    if existing:
+        cid = existing["id"]
+        api("PUT", f"/api/v1/chart/{cid}", json=body)
+        print(f"  cohort chart updated (id={cid})")
+    else:
+        cid = api("POST", "/api/v1/chart/", json=body)["id"]
+        print(f"  cohort chart created (id={cid})")
+    return cid
+
+
 # --- графики --------------------------------------------------------------
 def chart_specs(ds_id):
     dsrc = f"{ds_id}__table"
@@ -197,7 +277,7 @@ def ensure_charts(ds_id):
 
 
 # --- дашборд --------------------------------------------------------------
-def position_json(chart_ids):
+def position_json(chart_ids, cohort_chart_id=None):
     layout = {
         "DASHBOARD_VERSION_KEY": "v2",
         "ROOT_ID": {"type": "ROOT", "id": "ROOT_ID", "children": ["GRID_ID"]},
@@ -243,6 +323,25 @@ def position_json(chart_ids):
                                 "meta": {"chartId": cid, "width": width, "height": 50,
                                          "sliceName": name},
                                 "parents": ["ROOT_ID", "GRID_ID", row_id], "children": []}
+    # Когортная секция (один широкий heatmap) — добавляется, только если чарт создан.
+    if cohort_chart_id:
+        hdr_id = "HEADER-cohort"
+        layout["GRID_ID"]["children"].append(hdr_id)
+        layout[hdr_id] = {"type": "MARKDOWN", "id": hdr_id,
+                          "meta": {"width": 12, "height": 6,
+                                   "code": "### Cohort analysis"},
+                          "parents": ["ROOT_ID", "GRID_ID"], "children": []}
+        row_id = f"ROW-{ridx}"
+        layout["GRID_ID"]["children"].append(row_id)
+        layout[row_id] = {"type": "ROW", "id": row_id,
+                          "meta": {"background": "BACKGROUND_TRANSPARENT"},
+                          "parents": ["ROOT_ID", "GRID_ID"], "children": []}
+        comp = f"CHART-{cohort_chart_id}"
+        layout[row_id]["children"].append(comp)
+        layout[comp] = {"type": "CHART", "id": comp,
+                        "meta": {"chartId": cohort_chart_id, "width": 12, "height": 60,
+                                 "sliceName": COHORT_CHART},
+                        "parents": ["ROOT_ID", "GRID_ID", row_id], "children": []}
     return layout
 
 
@@ -264,11 +363,13 @@ def native_filters(ds_id, chart_ids):
     ]
 
 
-def ensure_dashboard(ds_id, chart_ids):
+def ensure_dashboard(ds_id, chart_ids, cohort_chart_id=None):
+    # Native-фильтры остаются на 13 основных чартах (физический датасет); когортный heatmap
+    # независим от глобальных фильтров (у него своя гранулярность — когорта × месяц).
     meta = {"native_filter_configuration": native_filters(ds_id, chart_ids),
             "cross_filters_enabled": True}
     body = {"dashboard_title": DASH_TITLE, "slug": "sms_operations", "published": True,
-            "position_json": json.dumps(position_json(chart_ids)),
+            "position_json": json.dumps(position_json(chart_ids, cohort_chart_id)),
             "json_metadata": json.dumps(meta)}
     existing = find_one("/api/v1/dashboard/", "slug", "sms_operations")
     if existing:
@@ -278,8 +379,9 @@ def ensure_dashboard(ds_id, chart_ids):
     else:
         did = api("POST", "/api/v1/dashboard/", json=body)["id"]
         print(f"  dashboard created id={did}")
-    # привязываем графики к дашборду
-    for cid in chart_ids.values():
+    # привязываем графики к дашборду (включая когортный, если создан)
+    all_ids = list(chart_ids.values()) + ([cohort_chart_id] if cohort_chart_id else [])
+    for cid in all_ids:
         api("PUT", f"/api/v1/chart/{cid}", json={"dashboards": [did]})
     return did
 
@@ -292,7 +394,15 @@ def main():
     print(f"[build_dashboard] database id={db_id}")
     ds_id = ensure_dataset(db_id)
     chart_ids = ensure_charts(ds_id)
-    did = ensure_dashboard(ds_id, chart_ids)
+    # Когортный heatmap — необязательное дополнение. Если что-то пойдёт не так
+    # с виртуальным датасетом/виз-типом, 13 основных чартов не должны пострадать.
+    cohort_chart_id = None
+    try:
+        cohort_ds_id = ensure_cohort_dataset(db_id)
+        cohort_chart_id = ensure_cohort_chart(cohort_ds_id)
+    except Exception as e:  # noqa: BLE001 — изолируем дополнительный чарт от обязательных
+        print(f"  ! cohort chart skipped (core dashboard unaffected): {e}", file=sys.stderr)
+    did = ensure_dashboard(ds_id, chart_ids, cohort_chart_id)
     print(f"[build_dashboard] DONE. Open {BASE}/superset/dashboard/sms_operations/  (id={did})")
 
 

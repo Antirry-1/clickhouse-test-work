@@ -1,7 +1,7 @@
 # dql/ — SQL за дашбордом «SMS Operations»
 
 Параллельно [`ddl/`](../ddl/) (определения таблиц, DDL) здесь лежит **DQL** — `SELECT`-запросы,
-которые стоят за 13 графиками дашборда **SMS Operations**.
+которые стоят за 14 графиками дашборда **SMS Operations** (13 основных + когортный heatmap).
 
 Два уровня «запросов»:
 - **Метрики** (SQL-агрегаты на датасете) — `METRICS` в `build_dashboard.py`.
@@ -31,6 +31,29 @@
 | 11 | Failed rate | KPIs | big number | `failed_rate_pct` | `charts/Failed_rate_11.yaml` |
 | 12 | Avg delivery time | KPIs | big number | `avg_delivery_time` | `charts/Avg_delivery_time_12.yaml` |
 | 13 | Cost per delivered | KPIs | big number | `cost_per_delivered` | `charts/Cost_per_delivered_13.yaml` |
+| 14 | Cohort retention | Cohort analysis | heatmap_v2 | retention % по `cohort_month` × `month_index` (виртуальный датасет `cohort_retention`) | `charts/Cohort_retention_14.yaml` |
 
-Сами запросы (по номерам) — в [`dashboard_queries.sql`](dashboard_queries.sql). Логика метрик и
+Сами запросы по чартам 1–13 — в [`dashboard_queries.sql`](dashboard_queries.sql), чарт 14
+(когортный) — запрос №1 в [`cohort_lifecycle.sql`](cohort_lifecycle.sql). Логика метрик и
 delivery rate / revenue также описана в [`docs/DESIGN.md`](../docs/DESIGN.md) №7.
+
+## Аналитический SQL (оконные функции, CTE, когортный анализ)
+
+Помимо запросов дашборда здесь лежат два справочных файла с более продвинутым SQL.
+Это reference-запросы для SQL Lab / `make ch-shell` (в авто-сборке дашборда не участвуют);
+синтаксис — ClickHouse 24.8, отличия от стандартного SQL (PostgreSQL) помечены в комментариях.
+Все запросы проверены на `clickhouse-local`.
+
+- [`analytics_queries.sql`](analytics_queries.sql) — **оконные функции + CTE**:
+  - **A** — накопленная выручка по дням, `sum() OVER (ORDER BY ... ROWS …)`;
+  - **B** — прирост выручки месяц-к-месяцу (MoM), смещение назад `lagInFrame()` (аналог `LAG`);
+  - **C** — топ-3 страны по выручке в каждом месяце, `row_number() OVER (PARTITION BY month …)`;
+  - **D** — тиры клиентов по выручке, `ntile(4)` + `dense_rank()`.
+- [`cohort_lifecycle.sql`](cohort_lifecycle.sql) — **когортный анализ и жизненный цикл**:
+  - **1** — retention-когорты получателей по месяцу первого SMS (когорта → метрика → разбивка),
+    `cohort_size` через `first_value() OVER (PARTITION BY cohort …)`; **этот запрос питает
+    дашбордовый heatmap «Cohort retention»** (чарт #14) через виртуальный датасет `cohort_retention`;
+  - **2** — классификация получателей `new / active / inactive / churned` по дням с последнего SMS.
+
+> Данные синтетические: получатели разыгрываются равномерно за год, поэтому retention/lifecycle
+> здесь иллюстрируют **технику**, а не реальную динамику (так и помечено в самих файлах).

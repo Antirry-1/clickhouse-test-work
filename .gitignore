@@ -15,6 +15,8 @@ venv/
 superset_home/
 *.db
 
+# Generated analytics output (Parquet daily reports from scripts/analyze_data.py, книга №2.5.6)
+reports/
+
 # Do NOT ignore screenshots — they are a required deliverable.
 !screenshots/*.png
-.gstack/

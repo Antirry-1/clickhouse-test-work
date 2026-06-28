@@ -8,7 +8,7 @@ COMPOSE := docker compose
 .DEFAULT_GOAL := help
 .PHONY: help env up down clean reset rebuild ps logs init generate regenerate \
         superset-init dashboard superset-export smoke-test rows period delivery-rate ch-shell open \
-        lint
+        lint analyze benchmark test analytics-sql
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
@@ -63,6 +63,26 @@ superset-export: ## Export the live Superset dashboard to git-tracked YAML (supe
 
 smoke-test: ## Verify the stack: containers up, ~1M rows, delivery-rate query works
 	bash scripts/smoke_test.sh
+
+analytics-sql: ## Run dql/analytics_queries.sql + cohort_lifecycle.sql against ClickHouse (stack must be up)
+	@for f in dql/analytics_queries.sql dql/cohort_lifecycle.sql; do \
+	  echo "=== $$f ==="; \
+	  $(COMPOSE) exec -T clickhouse clickhouse-client --user $${CLICKHOUSE_USER:-default} \
+	    --password $${CLICKHOUSE_PASSWORD:-clickhouse} --multiquery < "$$f" || exit 1; \
+	done
+
+analyze: env ## DQ + descriptive statistics over messages_mart (stack must be up); writes Parquet to reports/
+	@mkdir -p reports
+	$(COMPOSE) run --rm -v "$(PWD)/reports:/work/reports" --entrypoint bash generator \
+	  -lc "python scripts/analyze_data.py --out-dir reports"
+
+benchmark: env ## CSV/Parquet/Feather size & speed benchmark on mart data (no DB needed)
+	$(COMPOSE) run --rm --no-deps --entrypoint bash generator \
+	  -lc "python scripts/format_benchmark.py $(if $(ROWS),--rows $(ROWS),)"
+
+test: env ## Run generator + analysis self-checks in the generator image (no DB needed)
+	$(COMPOSE) run --rm --no-deps --entrypoint bash generator \
+	  -lc "python scripts/test_generate.py && python scripts/test_analyze.py"
 
 lint: ## Lint + type-check the Python scripts (pip install -r requirements-dev.txt first)
 	ruff check .

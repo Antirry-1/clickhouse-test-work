@@ -1,0 +1,106 @@
+table_name: cohort_retention
+main_dttm_col: cohort_month
+description: null
+default_endpoint: null
+offset: 0
+cache_timeout: null
+catalog: null
+schema: sms
+sql: "WITH first_seen AS (\n    SELECT receiver, toStartOfMonth(min(sent_date)) AS\
+  \ cohort_month\n    FROM sms.messages_mart_active WHERE receiver IS NOT NULL GROUP\
+  \ BY receiver),\nactivity AS (\n    SELECT f.cohort_month AS cohort_month,\n   \
+  \        dateDiff('month', f.cohort_month, toStartOfMonth(m.sent_date)) AS month_index,\n\
+  \           m.receiver AS receiver\n    FROM sms.messages_mart_active AS m INNER\
+  \ JOIN first_seen AS f USING (receiver)),\ncohort AS (\n    SELECT cohort_month,\
+  \ month_index, uniqExact(receiver) AS active_receivers\n    FROM activity GROUP\
+  \ BY cohort_month, month_index)\nSELECT cohort_month, month_index, active_receivers,\n\
+  \       round(100 * active_receivers /\n             first_value(active_receivers)\
+  \ OVER (PARTITION BY cohort_month ORDER BY month_index), 1) AS retention_pct\nFROM\
+  \ cohort"
+params: null
+template_params: null
+filter_select_enabled: true
+fetch_values_predicate: null
+extra: null
+normalize_columns: false
+always_filter_main_dttm: false
+uuid: d7e2122e-2b11-43af-a076-8c17055bb0c1
+metrics:
+- metric_name: retention_pct_max
+  verbose_name: Retention %
+  metric_type: null
+  expression: max(retention_pct)
+  description: null
+  d3format: null
+  currency: null
+  extra: null
+  warning_text: null
+- metric_name: active_receivers_max
+  verbose_name: Active receivers
+  metric_type: null
+  expression: max(active_receivers)
+  description: null
+  d3format: null
+  currency: null
+  extra: null
+  warning_text: null
+- metric_name: count
+  verbose_name: COUNT(*)
+  metric_type: count
+  expression: COUNT(*)
+  description: null
+  d3format: null
+  currency: null
+  extra: null
+  warning_text: null
+columns:
+- column_name: retention_pct
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: Float64
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra: null
+- column_name: active_receivers
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: UInt64
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra: null
+- column_name: month_index
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: Int64
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra: null
+- column_name: cohort_month
+  verbose_name: null
+  is_dttm: true
+  is_active: true
+  type: Date
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra: null
+version: 1.0.0
+database_uuid: 1a1a1a1a-0000-4000-8000-000000000001

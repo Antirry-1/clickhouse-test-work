@@ -5,7 +5,7 @@ slug: sms_operations
 certified_by: null
 certification_details: null
 published: true
-uuid: d8da0519-4007-42bf-855a-ec0c525331f2
+uuid: a2afdbc1-dfac-430e-8257-0eb76f724111
 position:
   DASHBOARD_VERSION_KEY: v2
   ROOT_ID:
@@ -27,7 +27,9 @@ position:
     - ROW-2
     - HEADER-3
     - ROW-3
-    - ROW-N-L6IO0DPR
+    - HEADER-cohort
+    - ROW-4
+    - ROW-N-BBDY2WSC
   HEADER_ID:
     type: HEADER
     id: HEADER_ID
@@ -295,22 +297,57 @@ position:
     - GRID_ID
     - ROW-3
     children: []
-  ROW-N-L6IO0DPR:
+  HEADER-cohort:
+    type: MARKDOWN
+    id: HEADER-cohort
+    meta:
+      width: 12
+      height: 6
+      code: '### Cohort analysis'
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    children: []
+  ROW-4:
+    type: ROW
+    id: ROW-4
+    meta:
+      background: BACKGROUND_TRANSPARENT
+    parents:
+    - ROOT_ID
+    - GRID_ID
     children:
-    - CHART-NCLT40PR
-    - CHART-U4Y9GYH7
-    - CHART-FH3QJP7S
-    - CHART-S298OOHS
-    - CHART-MLFW1VCN
-    - CHART-ATY21GRH
-    - CHART-OEJ8AD2W
-    - CHART-FM0SXE4B
-    - CHART-2GZ2AMOS
-    - CHART-PE56WCLZ
-    - CHART-FK6V8RHV
-    - CHART-LYA53RSG
-    - CHART-VCEP8YZG
-    id: ROW-N-L6IO0DPR
+    - CHART-14
+  CHART-14:
+    type: CHART
+    id: CHART-14
+    meta:
+      chartId: 14
+      width: 12
+      height: 60
+      sliceName: Cohort retention
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    - ROW-4
+    children: []
+  ROW-N-BBDY2WSC:
+    children:
+    - CHART-JIPUI48Q
+    - CHART-OS4IMFHP
+    - CHART-QACWVPZT
+    - CHART-XV5P9HXZ
+    - CHART-KRNH7NXR
+    - CHART-GD80FAER
+    - CHART-2X2F9T7A
+    - CHART-14C6UFBV
+    - CHART-5IL3CFC6
+    - CHART-EUZM30XU
+    - CHART-D014W5YR
+    - CHART-JGHLNPWI
+    - CHART-IH28VOY4
+    - CHART-K92JBSQ7
+    id: ROW-N-BBDY2WSC
     meta:
       '0': ROOT_ID
       background: BACKGROUND_TRANSPARENT
@@ -318,188 +355,202 @@ position:
     parents:
     - ROOT_ID
     - GRID_ID
-  CHART-NCLT40PR:
+  CHART-JIPUI48Q:
     children: []
-    id: CHART-NCLT40PR
-    meta:
-      chartId: 4
-      height: 50
-      sliceName: Top countries
-      uuid: 039c8b33-7d4c-426e-9328-c61731997a5f
-      width: 4
-    type: CHART
-    parents:
-    - ROOT_ID
-    - GRID_ID
-    - ROW-N-L6IO0DPR
-  CHART-U4Y9GYH7:
-    children: []
-    id: CHART-U4Y9GYH7
-    meta:
-      chartId: 9
-      height: 50
-      sliceName: Avg delivery time by operator
-      uuid: bbdeded7-7f76-45a4-8cb4-bd682fa1fe02
-      width: 4
-    type: CHART
-    parents:
-    - ROOT_ID
-    - GRID_ID
-    - ROW-N-L6IO0DPR
-  CHART-FH3QJP7S:
-    children: []
-    id: CHART-FH3QJP7S
-    meta:
-      chartId: 7
-      height: 50
-      sliceName: Failed statuses
-      uuid: 27aa975a-cdf0-4657-86c0-b521ac33aafc
-      width: 4
-    type: CHART
-    parents:
-    - ROOT_ID
-    - GRID_ID
-    - ROW-N-L6IO0DPR
-  CHART-S298OOHS:
-    children: []
-    id: CHART-S298OOHS
+    id: CHART-JIPUI48Q
     meta:
       chartId: 13
       height: 50
       sliceName: Cost per delivered
-      uuid: 9fadeb59-2005-433c-a414-019ed6177978
+      uuid: 5d4111c6-8911-4df4-8c75-d408990de6f0
       width: 4
     type: CHART
     parents:
     - ROOT_ID
     - GRID_ID
-    - ROW-N-L6IO0DPR
-  CHART-MLFW1VCN:
+    - ROW-N-BBDY2WSC
+  CHART-OS4IMFHP:
     children: []
-    id: CHART-MLFW1VCN
+    id: CHART-OS4IMFHP
+    meta:
+      chartId: 14
+      height: 50
+      sliceName: Cohort retention
+      uuid: 4acc9c45-d929-42c8-8e13-3d0c4647dc83
+      width: 4
+    type: CHART
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    - ROW-N-BBDY2WSC
+  CHART-QACWVPZT:
+    children: []
+    id: CHART-QACWVPZT
     meta:
       chartId: 6
       height: 50
       sliceName: Revenue by currency
-      uuid: 8c6eb6d5-c27d-45cd-bd22-c574818d6b23
+      uuid: 8c29ecbf-a23b-4a53-989a-82c2a95230f1
       width: 4
     type: CHART
     parents:
     - ROOT_ID
     - GRID_ID
-    - ROW-N-L6IO0DPR
-  CHART-ATY21GRH:
+    - ROW-N-BBDY2WSC
+  CHART-XV5P9HXZ:
     children: []
-    id: CHART-ATY21GRH
+    id: CHART-XV5P9HXZ
+    meta:
+      chartId: 7
+      height: 50
+      sliceName: Failed statuses
+      uuid: da400075-bdb0-4fcb-8adc-e54b3421c4e0
+      width: 4
+    type: CHART
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    - ROW-N-BBDY2WSC
+  CHART-KRNH7NXR:
+    children: []
+    id: CHART-KRNH7NXR
     meta:
       chartId: 12
       height: 50
       sliceName: Avg delivery time
-      uuid: c412411e-b484-4c75-9700-f9f8879a943f
+      uuid: 0ace3b5b-7e1b-4643-88dc-ec733b09240f
       width: 4
     type: CHART
     parents:
     - ROOT_ID
     - GRID_ID
-    - ROW-N-L6IO0DPR
-  CHART-OEJ8AD2W:
+    - ROW-N-BBDY2WSC
+  CHART-GD80FAER:
     children: []
-    id: CHART-OEJ8AD2W
-    meta:
-      chartId: 10
-      height: 50
-      sliceName: Delivery rate by country
-      uuid: e5ce76c4-b451-4685-bb3d-3fdfbcd1e20e
-      width: 4
-    type: CHART
-    parents:
-    - ROOT_ID
-    - GRID_ID
-    - ROW-N-L6IO0DPR
-  CHART-FM0SXE4B:
-    children: []
-    id: CHART-FM0SXE4B
+    id: CHART-GD80FAER
     meta:
       chartId: 5
       height: 50
       sliceName: Top operators
-      uuid: d4522f22-4d2f-4f16-bcea-d9599010b79c
+      uuid: 5bb62eaa-191c-45b4-b851-6b2b92f583fd
       width: 4
     type: CHART
     parents:
     - ROOT_ID
     - GRID_ID
-    - ROW-N-L6IO0DPR
-  CHART-2GZ2AMOS:
+    - ROW-N-BBDY2WSC
+  CHART-2X2F9T7A:
     children: []
-    id: CHART-2GZ2AMOS
-    meta:
-      chartId: 8
-      height: 50
-      sliceName: Delivery rate by operator
-      uuid: 90534014-18e9-40ef-a47c-cc0530377e66
-      width: 4
-    type: CHART
-    parents:
-    - ROOT_ID
-    - GRID_ID
-    - ROW-N-L6IO0DPR
-  CHART-PE56WCLZ:
-    children: []
-    id: CHART-PE56WCLZ
+    id: CHART-2X2F9T7A
     meta:
       chartId: 11
       height: 50
       sliceName: Failed rate
-      uuid: e56c1d10-69fc-4c65-b094-fb016bb80b88
+      uuid: b00108f2-7526-4836-93df-8b62b5d88315
       width: 4
     type: CHART
     parents:
     - ROOT_ID
     - GRID_ID
-    - ROW-N-L6IO0DPR
-  CHART-FK6V8RHV:
+    - ROW-N-BBDY2WSC
+  CHART-14C6UFBV:
     children: []
-    id: CHART-FK6V8RHV
+    id: CHART-14C6UFBV
     meta:
-      chartId: 2
+      chartId: 4
       height: 50
-      sliceName: Delivery rate
-      uuid: 61afabb0-a360-4b4b-ab28-ab86926be910
+      sliceName: Top countries
+      uuid: c213ec08-93e5-467f-a1c1-fa7cb4297538
       width: 4
     type: CHART
     parents:
     - ROOT_ID
     - GRID_ID
-    - ROW-N-L6IO0DPR
-  CHART-LYA53RSG:
+    - ROW-N-BBDY2WSC
+  CHART-5IL3CFC6:
     children: []
-    id: CHART-LYA53RSG
-    meta:
-      chartId: 3
-      height: 50
-      sliceName: Revenue (total)
-      uuid: 9e047c19-a9eb-4aa7-b956-923e11e05203
-      width: 4
-    type: CHART
-    parents:
-    - ROOT_ID
-    - GRID_ID
-    - ROW-N-L6IO0DPR
-  CHART-VCEP8YZG:
-    children: []
-    id: CHART-VCEP8YZG
+    id: CHART-5IL3CFC6
     meta:
       chartId: 1
       height: 50
       sliceName: SMS by day
-      uuid: 73178ea9-eb33-4d45-9e65-9be54db613d6
+      uuid: 9d9fe7fc-e28c-4e85-97d0-42219461e2d0
       width: 4
     type: CHART
     parents:
     - ROOT_ID
     - GRID_ID
-    - ROW-N-L6IO0DPR
+    - ROW-N-BBDY2WSC
+  CHART-EUZM30XU:
+    children: []
+    id: CHART-EUZM30XU
+    meta:
+      chartId: 8
+      height: 50
+      sliceName: Delivery rate by operator
+      uuid: 6886a166-7587-42a5-beed-89ec01cf8947
+      width: 4
+    type: CHART
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    - ROW-N-BBDY2WSC
+  CHART-D014W5YR:
+    children: []
+    id: CHART-D014W5YR
+    meta:
+      chartId: 2
+      height: 50
+      sliceName: Delivery rate
+      uuid: 04ddae3f-cd76-497c-93b5-d1926a1a7c62
+      width: 4
+    type: CHART
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    - ROW-N-BBDY2WSC
+  CHART-JGHLNPWI:
+    children: []
+    id: CHART-JGHLNPWI
+    meta:
+      chartId: 10
+      height: 50
+      sliceName: Delivery rate by country
+      uuid: 7a07c184-9c4e-4a76-811d-6ecafc9282e9
+      width: 4
+    type: CHART
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    - ROW-N-BBDY2WSC
+  CHART-IH28VOY4:
+    children: []
+    id: CHART-IH28VOY4
+    meta:
+      chartId: 3
+      height: 50
+      sliceName: Revenue (total)
+      uuid: e7c8f2c0-fc78-4d39-a093-4c89ececdf2a
+      width: 4
+    type: CHART
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    - ROW-N-BBDY2WSC
+  CHART-K92JBSQ7:
+    children: []
+    id: CHART-K92JBSQ7
+    meta:
+      chartId: 9
+      height: 50
+      sliceName: Avg delivery time by operator
+      uuid: d22ac9c5-80f4-475b-909d-762278f57117
+      width: 4
+    type: CHART
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    - ROW-N-BBDY2WSC
 metadata:
   native_filter_configuration:
   - id: NATIVE_FILTER-customer
@@ -509,7 +560,7 @@ metadata:
     targets:
     - column:
         name: customer_id
-      datasetUuid: 77a9edc1-b029-4d52-b0b3-6db544b36fc1
+      datasetUuid: 64857edb-ff1a-4d43-9739-a514bdaefa63
     controlValues:
       multiSelect: true
       enableEmptyFilter: false
@@ -567,11 +618,4 @@ metadata:
     - 13
     tabsInScope: []
   cross_filters_enabled: true
-  timed_refresh_immune_slices: []
-  expanded_slices: {}
-  refresh_frequency: 0
-  color_scheme: ''
-  label_colors: {}
-  shared_label_colors: {}
-  color_scheme_domain: []
 version: 1.0.0

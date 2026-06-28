@@ -4,3 +4,6 @@ clickhouse-connect==0.8.18
 # numpy vectorizes the column generation; pandas carries the columnar batch.
 numpy==2.5.0
 pandas==3.0.3
+# pyarrow is the engine for pandas .to_parquet/.to_feather: Parquet/Feather
+# отчёты в scripts/analyze_data.py и замер форматов в scripts/format_benchmark.py.
+pyarrow==24.0.0
