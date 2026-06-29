@@ -14,9 +14,9 @@ sql: "WITH first_seen AS (\n    SELECT receiver, toStartOfMonth(min(sent_date)) 
   \ JOIN first_seen AS f USING (receiver)),\ncohort AS (\n    SELECT cohort_month,\
   \ month_index, uniqExact(receiver) AS active_receivers\n    FROM activity GROUP\
   \ BY cohort_month, month_index)\nSELECT cohort_month, month_index, active_receivers,\n\
-  \       round(100 * active_receivers /\n             first_value(active_receivers)\
-  \ OVER (PARTITION BY cohort_month ORDER BY month_index), 1) AS retention_pct\nFROM\
-  \ cohort"
+  \       round(100 * active_receivers /\n             first_value(active_receivers)\n\
+  \                 OVER (PARTITION BY cohort_month ORDER BY month_index), 1) AS retention_pct\n\
+  FROM cohort"
 params: null
 template_params: null
 filter_select_enabled: true
@@ -24,7 +24,7 @@ fetch_values_predicate: null
 extra: null
 normalize_columns: false
 always_filter_main_dttm: false
-uuid: d7e2122e-2b11-43af-a076-8c17055bb0c1
+uuid: 579c5642-5b68-47a9-b3c7-77f46d005820
 metrics:
 - metric_name: retention_pct_max
   verbose_name: Retention %

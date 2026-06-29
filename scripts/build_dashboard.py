@@ -24,6 +24,13 @@ DB_NAME = "ClickHouse SMS"
 TABLE = "messages_mart_active"
 DASH_TITLE = "SMS Operations"
 
+# KPI-полоса North Star (верхний ряд). Цвет порога осмысленный:
+# для KPI_GOOD выше = лучше (зелёный), для KPI_BAD выше = хуже (красный), остальные нейтральны.
+KPI_ALL = ["Delivery rate", "Revenue (total)", "Failed rate",
+           "Avg delivery time", "Cost per delivered"]
+KPI_GOOD = "Delivery rate"
+KPI_BAD = "Failed rate"
+
 # Когортный анализ — отдельный ВИРТУАЛЬНЫЙ (SQL) датасет, т.к. retention считается
 # оконными функциями и его не выразить простой метрикой на физической витрине.
 # SQL = запрос №1 из dql/cohort_lifecycle.sql.
@@ -43,7 +50,8 @@ cohort AS (
     FROM activity GROUP BY cohort_month, month_index)
 SELECT cohort_month, month_index, active_receivers,
        round(100 * active_receivers /
-             first_value(active_receivers) OVER (PARTITION BY cohort_month ORDER BY month_index), 1) AS retention_pct
+             first_value(active_receivers)
+                 OVER (PARTITION BY cohort_month ORDER BY month_index), 1) AS retention_pct
 FROM cohort"""
 
 s = requests.Session()
@@ -175,14 +183,19 @@ def ensure_cohort_dataset(db_id):
 
 def cohort_chart_params(ds_id):
     # heatmap: x = месяц с первого контакта, y = когорта (месяц первого SMS), цвет = retention %.
+    # month_index=0 — базовый месяц когорты (всегда 100%); heatmap_v2 рисует числовой 0 как
+    # "<NULL>"-колонку. Отсекаем его фильтром: retention для 1..11 уже посчитан в SQL
+    # относительно месяца 0 (first_value по полному окну), поэтому математика не страдает.
     return {
         "datasource": f"{ds_id}__table", "viz_type": "heatmap_v2",
         "x_axis": "month_index", "groupby": "cohort_month",
         "metric": "retention_pct_max",
-        "row_limit": 10000, "adhoc_filters": [],
+        "row_limit": 10000,
+        "adhoc_filters": [{"expressionType": "SIMPLE", "subject": "month_index",
+                           "operator": ">", "comparator": "0", "clause": "WHERE"}],
         "sort_x_axis": "value_asc", "sort_y_axis": "value_asc",
         "normalize_across": "y", "legend_type": "continuous",
-        "linear_color_scheme": "blue_white_yellow", "show_values": True,
+        "linear_color_scheme": "dark_blue", "show_values": True,  # одно-тоновый синий — в тему
         "value_bounds": [0, 100], "y_axis_format": "SMART_NUMBER",
     }
 
@@ -363,12 +376,107 @@ def native_filters(ds_id, chart_ids):
     ]
 
 
+# Палитра темы «Operations Command Center» (современный светлый аналитический UI).
+THEME = {"brand": "#6366F1", "brand2": "#22D3EE", "good": "#10B981", "bad": "#F43F5E",
+         "ink": "#0F172A", "muted": "#64748B", "border": "#E6EAF2"}
+
+
+def dashboard_css(chart_ids):
+    """CSS-тема «Operations Command Center»: нейтральный холст-градиент, приподнятые
+    карточки со скруглением, мягкой многослойной тенью и hover-lift, KPI-полоса с
+    семантичными акцентами порога, «eyebrow»-заголовки секций.
+    Селекторы .dashboard-chart-id-N стабильны между сборками — в отличие от
+    сгенерированных Emotion-классов вида .css-13133f7. Под Superset 4.1 тема задаётся
+    только через CSS (дизайн-токены/тёмная тема появились в 6.0; на canvas-графиках
+    цвет осей CSS-ом не перекрасить, поэтому светлая тема — единственный надёжный путь)."""
+    t = THEME
+
+    def sel(name):  # акцент кладём на видимую карточку (внутренний holder)
+        return f".dashboard-chart-id-{chart_ids[name]} .dashboard-component-chart-holder"
+
+    parts = [f"""\
+/* ===== SMS Operations — тема «Operations Command Center» ===== */
+
+/* Холст: мягкая радиальная вуаль, чтобы карточки «парили» */
+.dashboard-content, .grid-content {{
+  background: radial-gradient(1200px 620px at 50% -8%,
+    #F8FAFF 0%, #EDF1F8 55%, #E8EDF5 100%) !important;
+}}
+
+/* Карточки графиков: скругление, тонкая рамка, многослойная тень, hover-lift */
+.dashboard-component-chart-holder {{
+  background:#fff; border:1px solid {t['border']}; border-radius:14px;
+  box-shadow:0 1px 2px rgba(16,24,40,.04), 0 12px 28px -16px rgba(16,24,40,.20);
+  transition:box-shadow .18s ease, transform .18s ease; overflow:hidden;
+}}
+.dashboard-component-chart-holder:hover {{
+  box-shadow:0 6px 14px rgba(16,24,40,.08), 0 22px 48px -20px rgba(16,24,40,.28);
+  transform:translateY(-2px);
+}}
+.dashboard-component-chart-holder .header-title {{ font-weight:600; color:{t['ink']}; }}
+
+/* BigNumber — центрируем и усиливаем число */
+.superset-legacy-chart-big-number {{ align-items:center; }}
+.superset-legacy-chart-big-number .header-line {{
+  justify-content:center; font-weight:700; color:{t['ink']}; }}
+.superset-legacy-chart-big-number .subheader-line {{
+  justify-content:center; color:{t['muted']}; font-weight:500; }}
+
+/* «Eyebrow»-заголовки секций вместо дефолтного h3.
+   Markdown-блоки секций несут тот же класс .dashboard-component-chart-holder, что и
+   графики (карточный стиль выше задел и их), но лежат внутри обёртки .dashboard-markdown.
+   Снимаем у них карточный фон/тень → заголовок «парит» на холсте, карточки графиков целы. */
+.dashboard-markdown .dashboard-component-chart-holder {{
+  background:transparent !important; border:0 !important;
+  box-shadow:none !important; overflow:visible; }}
+.dashboard-markdown .dashboard-component-chart-holder:hover {{
+  transform:none; box-shadow:none !important; }}
+.dashboard-markdown h3 {{
+  margin:16px 0 2px; padding:0; border:0;
+  font:600 11px/1.5 'Inter', system-ui, sans-serif;
+  text-transform:uppercase; letter-spacing:.14em; color:{t['muted']};
+  display:flex; align-items:center; gap:10px;
+}}
+.dashboard-markdown h3::before {{
+  content:""; width:12px; height:12px; border-radius:4px;
+  background:linear-gradient(135deg, {t['brand']}, {t['brand2']});
+  box-shadow:0 2px 6px -1px {t['brand']}66;
+}}"""]
+
+    kpis = [n for n in KPI_ALL if n in chart_ids]
+    if kpis:
+        group = ", ".join(sel(n) for n in kpis)
+        parts.append(f"""/* KPI-полоса North Star — приподнятые карточки с акцентом-порогом */
+{group} {{ border-top:3px solid {t['brand']}; border-radius:16px;
+  box-shadow:0 1px 2px rgba(16,24,40,.04), 0 14px 34px -18px rgba(16,24,40,.22); }}""")
+        # Цвет порога каскадом поверх базового бренд-акцента.
+        if KPI_GOOD in chart_ids:
+            parts.append(f"{sel(KPI_GOOD)} {{ border-top-color:{t['good']}; }} /* выше = лучше */")
+        if KPI_BAD in chart_ids:
+            parts.append(f"{sel(KPI_BAD)} {{ border-top-color:{t['bad']}; }} /* выше = хуже */")
+    return "\n".join(parts)
+
+
 def ensure_dashboard(ds_id, chart_ids, cohort_chart_id=None):
     # Native-фильтры остаются на 13 основных чартах (физический датасет); когортный heatmap
     # независим от глобальных фильтров (у него своя гранулярность — когорта × месяц).
+    # Перекраска одно-серийных столбцов/линии в бренд-индиго (под тему), чтобы уйти от
+    # дефолтного бирюзового монохрома. Pie остаётся категориальным (его слайсы — операторы).
+    brand_labels = ["SMS count", "Revenue", "Delivery rate %", "Avg delivery time (ms)",
+                    "Failed rate %", "Cost per delivered", "count_messages", "revenue"]
+    label_colors = dict.fromkeys(brand_labels, THEME["brand"])
+    # Пай «Top operators»: когерентная холодная палитра (индиго→sky→cyan→teal→violet) по
+    # топ-10 операторам — слайсы пая красятся по label_colors их подписей. Столбчатые чарты
+    # «… by operator» не затрагиваются (там оператор — категория оси X, не серия).
+    label_colors.update({
+        "Beeline": "#4F46E5", "MTS": "#6366F1", "All networks": "#818CF8",
+        "Tele2": "#0EA5E9", "Scartel": "#38BDF8", "MegaFon": "#06B6D4",
+        "Altel": "#22D3EE", "K-Cell": "#14B8A6", "Azercell": "#2DD4BF",
+        "MobiUZ (MTS)": "#8B5CF6"})
     meta = {"native_filter_configuration": native_filters(ds_id, chart_ids),
-            "cross_filters_enabled": True}
+            "cross_filters_enabled": True, "label_colors": label_colors}
     body = {"dashboard_title": DASH_TITLE, "slug": "sms_operations", "published": True,
+            "css": dashboard_css(chart_ids),
             "position_json": json.dumps(position_json(chart_ids, cohort_chart_id)),
             "json_metadata": json.dumps(meta)}
     existing = find_one("/api/v1/dashboard/", "slug", "sms_operations")

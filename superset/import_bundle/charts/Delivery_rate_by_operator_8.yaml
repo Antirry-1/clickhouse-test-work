@@ -16,6 +16,6 @@ params:
   granularity_sqla: sent_date
 query_context: null
 cache_timeout: null
-uuid: 6886a166-7587-42a5-beed-89ec01cf8947
+uuid: 0455e872-dd96-45ed-b6b4-7bb2ba491ba6
 version: 1.0.0
-dataset_uuid: 64857edb-ff1a-4d43-9739-a514bdaefa63
+dataset_uuid: 74b5cfb1-c383-415e-86d4-65caeb20c02c

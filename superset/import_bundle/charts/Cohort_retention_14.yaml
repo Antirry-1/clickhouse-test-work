@@ -10,12 +10,17 @@ params:
   groupby: cohort_month
   metric: retention_pct_max
   row_limit: 10000
-  adhoc_filters: []
+  adhoc_filters:
+  - expressionType: SIMPLE
+    subject: month_index
+    operator: '>'
+    comparator: '0'
+    clause: WHERE
   sort_x_axis: value_asc
   sort_y_axis: value_asc
   normalize_across: y
   legend_type: continuous
-  linear_color_scheme: blue_white_yellow
+  linear_color_scheme: dark_blue
   show_values: true
   value_bounds:
   - 0
@@ -23,6 +28,6 @@ params:
   y_axis_format: SMART_NUMBER
 query_context: null
 cache_timeout: null
-uuid: 4acc9c45-d929-42c8-8e13-3d0c4647dc83
+uuid: ae4b9413-fe25-4c0c-9d86-55d68a5b5a6a
 version: 1.0.0
-dataset_uuid: d7e2122e-2b11-43af-a076-8c17055bb0c1
+dataset_uuid: 579c5642-5b68-47a9-b3c7-77f46d005820

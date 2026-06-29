@@ -1,11 +1,11 @@
 dashboard_title: SMS Operations
 description: null
-css: null
+css: "/* ===== SMS Operations — тема «Operations Command Center» ===== */\n\n/* Холст: мягкая радиальная вуаль, чтобы карточки «парили» */\n.dashboard-content, .grid-content {\n  background: radial-gradient(1200px 620px at 50% -8%,\n    #F8FAFF 0%, #EDF1F8 55%, #E8EDF5 100%) !important;\n}\n\n/* Карточки графиков: скругление, тонкая рамка, многослойная тень, hover-lift */\n.dashboard-component-chart-holder {\n  background:#fff; border:1px solid #E6EAF2; border-radius:14px;\n  box-shadow:0 1px 2px rgba(16,24,40,.04), 0 12px 28px -16px rgba(16,24,40,.20);\n  transition:box-shadow .18s ease, transform .18s ease; overflow:hidden;\n}\n.dashboard-component-chart-holder:hover {\n  box-shadow:0 6px 14px rgba(16,24,40,.08), 0 22px 48px -20px rgba(16,24,40,.28);\n  transform:translateY(-2px);\n}\n.dashboard-component-chart-holder .header-title { font-weight:600; color:#0F172A; }\n\n/* BigNumber — центрируем и усиливаем число */\n.superset-legacy-chart-big-number { align-items:center; }\n.superset-legacy-chart-big-number .header-line {\n  justify-content:center; font-weight:700; color:#0F172A; }\n.superset-legacy-chart-big-number .subheader-line {\n  justify-content:center; color:#64748B; font-weight:500; }\n\n/* «Eyebrow»-заголовки секций вместо дефолтного h3.\n   Markdown-блоки секций несут тот же класс .dashboard-component-chart-holder, что и\n   графики (карточный стиль выше задел и их), но лежат внутри обёртки .dashboard-markdown.\n   Снимаем у них карточный фон/тень → заголовок «парит» на холсте, карточки графиков целы. */\n.dashboard-markdown .dashboard-component-chart-holder {\n  background:transparent !important; border:0 !important;\n  box-shadow:none !important; overflow:visible; }\n.dashboard-markdown .dashboard-component-chart-holder:hover {\n  transform:none; box-shadow:none !important; }\n.dashboard-markdown h3 {\n  margin:16px 0 2px; padding:0; border:0;\n  font:600 11px/1.5 'Inter', system-ui, sans-serif;\n  text-transform:uppercase; letter-spacing:.14em; color:#64748B;\n  display:flex; align-items:center; gap:10px;\n}\n.dashboard-markdown h3::before {\n  content:\"\"; width:12px; height:12px; border-radius:4px;\n  background:linear-gradient(135deg, #6366F1, #22D3EE);\n  box-shadow:0 2px 6px -1px #6366F166;\n}\n/* KPI-полоса North Star — приподнятые карточки с акцентом-порогом */\n.dashboard-chart-id-2 .dashboard-component-chart-holder, .dashboard-chart-id-3 .dashboard-component-chart-holder, .dashboard-chart-id-11 .dashboard-component-chart-holder, .dashboard-chart-id-12 .dashboard-component-chart-holder, .dashboard-chart-id-13 .dashboard-component-chart-holder { border-top:3px solid #6366F1; border-radius:16px;\n  box-shadow:0 1px 2px rgba(16,24,40,.04), 0 14px 34px -18px rgba(16,24,40,.22); }\n.dashboard-chart-id-2 .dashboard-component-chart-holder { border-top-color:#10B981; } /* выше = лучше */\n.dashboard-chart-id-11 .dashboard-component-chart-holder { border-top-color:#F43F5E; } /* выше = хуже */"
 slug: sms_operations
 certified_by: null
 certification_details: null
 published: true
-uuid: a2afdbc1-dfac-430e-8257-0eb76f724111
+uuid: d7be9484-7dfc-4ca9-b7a3-e238806cbc55
 position:
   DASHBOARD_VERSION_KEY: v2
   ROOT_ID:
@@ -29,7 +29,6 @@ position:
     - ROW-3
     - HEADER-cohort
     - ROW-4
-    - ROW-N-BBDY2WSC
   HEADER_ID:
     type: HEADER
     id: HEADER_ID
@@ -331,226 +330,6 @@ position:
     - GRID_ID
     - ROW-4
     children: []
-  ROW-N-BBDY2WSC:
-    children:
-    - CHART-JIPUI48Q
-    - CHART-OS4IMFHP
-    - CHART-QACWVPZT
-    - CHART-XV5P9HXZ
-    - CHART-KRNH7NXR
-    - CHART-GD80FAER
-    - CHART-2X2F9T7A
-    - CHART-14C6UFBV
-    - CHART-5IL3CFC6
-    - CHART-EUZM30XU
-    - CHART-D014W5YR
-    - CHART-JGHLNPWI
-    - CHART-IH28VOY4
-    - CHART-K92JBSQ7
-    id: ROW-N-BBDY2WSC
-    meta:
-      '0': ROOT_ID
-      background: BACKGROUND_TRANSPARENT
-    type: ROW
-    parents:
-    - ROOT_ID
-    - GRID_ID
-  CHART-JIPUI48Q:
-    children: []
-    id: CHART-JIPUI48Q
-    meta:
-      chartId: 13
-      height: 50
-      sliceName: Cost per delivered
-      uuid: 5d4111c6-8911-4df4-8c75-d408990de6f0
-      width: 4
-    type: CHART
-    parents:
-    - ROOT_ID
-    - GRID_ID
-    - ROW-N-BBDY2WSC
-  CHART-OS4IMFHP:
-    children: []
-    id: CHART-OS4IMFHP
-    meta:
-      chartId: 14
-      height: 50
-      sliceName: Cohort retention
-      uuid: 4acc9c45-d929-42c8-8e13-3d0c4647dc83
-      width: 4
-    type: CHART
-    parents:
-    - ROOT_ID
-    - GRID_ID
-    - ROW-N-BBDY2WSC
-  CHART-QACWVPZT:
-    children: []
-    id: CHART-QACWVPZT
-    meta:
-      chartId: 6
-      height: 50
-      sliceName: Revenue by currency
-      uuid: 8c29ecbf-a23b-4a53-989a-82c2a95230f1
-      width: 4
-    type: CHART
-    parents:
-    - ROOT_ID
-    - GRID_ID
-    - ROW-N-BBDY2WSC
-  CHART-XV5P9HXZ:
-    children: []
-    id: CHART-XV5P9HXZ
-    meta:
-      chartId: 7
-      height: 50
-      sliceName: Failed statuses
-      uuid: da400075-bdb0-4fcb-8adc-e54b3421c4e0
-      width: 4
-    type: CHART
-    parents:
-    - ROOT_ID
-    - GRID_ID
-    - ROW-N-BBDY2WSC
-  CHART-KRNH7NXR:
-    children: []
-    id: CHART-KRNH7NXR
-    meta:
-      chartId: 12
-      height: 50
-      sliceName: Avg delivery time
-      uuid: 0ace3b5b-7e1b-4643-88dc-ec733b09240f
-      width: 4
-    type: CHART
-    parents:
-    - ROOT_ID
-    - GRID_ID
-    - ROW-N-BBDY2WSC
-  CHART-GD80FAER:
-    children: []
-    id: CHART-GD80FAER
-    meta:
-      chartId: 5
-      height: 50
-      sliceName: Top operators
-      uuid: 5bb62eaa-191c-45b4-b851-6b2b92f583fd
-      width: 4
-    type: CHART
-    parents:
-    - ROOT_ID
-    - GRID_ID
-    - ROW-N-BBDY2WSC
-  CHART-2X2F9T7A:
-    children: []
-    id: CHART-2X2F9T7A
-    meta:
-      chartId: 11
-      height: 50
-      sliceName: Failed rate
-      uuid: b00108f2-7526-4836-93df-8b62b5d88315
-      width: 4
-    type: CHART
-    parents:
-    - ROOT_ID
-    - GRID_ID
-    - ROW-N-BBDY2WSC
-  CHART-14C6UFBV:
-    children: []
-    id: CHART-14C6UFBV
-    meta:
-      chartId: 4
-      height: 50
-      sliceName: Top countries
-      uuid: c213ec08-93e5-467f-a1c1-fa7cb4297538
-      width: 4
-    type: CHART
-    parents:
-    - ROOT_ID
-    - GRID_ID
-    - ROW-N-BBDY2WSC
-  CHART-5IL3CFC6:
-    children: []
-    id: CHART-5IL3CFC6
-    meta:
-      chartId: 1
-      height: 50
-      sliceName: SMS by day
-      uuid: 9d9fe7fc-e28c-4e85-97d0-42219461e2d0
-      width: 4
-    type: CHART
-    parents:
-    - ROOT_ID
-    - GRID_ID
-    - ROW-N-BBDY2WSC
-  CHART-EUZM30XU:
-    children: []
-    id: CHART-EUZM30XU
-    meta:
-      chartId: 8
-      height: 50
-      sliceName: Delivery rate by operator
-      uuid: 6886a166-7587-42a5-beed-89ec01cf8947
-      width: 4
-    type: CHART
-    parents:
-    - ROOT_ID
-    - GRID_ID
-    - ROW-N-BBDY2WSC
-  CHART-D014W5YR:
-    children: []
-    id: CHART-D014W5YR
-    meta:
-      chartId: 2
-      height: 50
-      sliceName: Delivery rate
-      uuid: 04ddae3f-cd76-497c-93b5-d1926a1a7c62
-      width: 4
-    type: CHART
-    parents:
-    - ROOT_ID
-    - GRID_ID
-    - ROW-N-BBDY2WSC
-  CHART-JGHLNPWI:
-    children: []
-    id: CHART-JGHLNPWI
-    meta:
-      chartId: 10
-      height: 50
-      sliceName: Delivery rate by country
-      uuid: 7a07c184-9c4e-4a76-811d-6ecafc9282e9
-      width: 4
-    type: CHART
-    parents:
-    - ROOT_ID
-    - GRID_ID
-    - ROW-N-BBDY2WSC
-  CHART-IH28VOY4:
-    children: []
-    id: CHART-IH28VOY4
-    meta:
-      chartId: 3
-      height: 50
-      sliceName: Revenue (total)
-      uuid: e7c8f2c0-fc78-4d39-a093-4c89ececdf2a
-      width: 4
-    type: CHART
-    parents:
-    - ROOT_ID
-    - GRID_ID
-    - ROW-N-BBDY2WSC
-  CHART-K92JBSQ7:
-    children: []
-    id: CHART-K92JBSQ7
-    meta:
-      chartId: 9
-      height: 50
-      sliceName: Avg delivery time by operator
-      uuid: d22ac9c5-80f4-475b-909d-762278f57117
-      width: 4
-    type: CHART
-    parents:
-    - ROOT_ID
-    - GRID_ID
-    - ROW-N-BBDY2WSC
 metadata:
   native_filter_configuration:
   - id: NATIVE_FILTER-customer
@@ -560,7 +339,7 @@ metadata:
     targets:
     - column:
         name: customer_id
-      datasetUuid: 64857edb-ff1a-4d43-9739-a514bdaefa63
+      datasetUuid: 74b5cfb1-c383-415e-86d4-65caeb20c02c
     controlValues:
       multiSelect: true
       enableEmptyFilter: false
@@ -618,4 +397,29 @@ metadata:
     - 13
     tabsInScope: []
   cross_filters_enabled: true
+  label_colors:
+    SMS count: '#6366F1'
+    Revenue: '#6366F1'
+    Delivery rate %: '#6366F1'
+    Avg delivery time (ms): '#6366F1'
+    Failed rate %: '#6366F1'
+    Cost per delivered: '#6366F1'
+    count_messages: '#6366F1'
+    revenue: '#6366F1'
+    Beeline: '#4F46E5'
+    MTS: '#6366F1'
+    All networks: '#818CF8'
+    Tele2: '#0EA5E9'
+    Scartel: '#38BDF8'
+    MegaFon: '#06B6D4'
+    Altel: '#22D3EE'
+    K-Cell: '#14B8A6'
+    Azercell: '#2DD4BF'
+    MobiUZ (MTS): '#8B5CF6'
+  timed_refresh_immune_slices: []
+  expanded_slices: {}
+  refresh_frequency: 0
+  color_scheme: ''
+  shared_label_colors: {}
+  color_scheme_domain: []
 version: 1.0.0
