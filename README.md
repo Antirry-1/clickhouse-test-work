@@ -152,6 +152,14 @@ make delivery-rate   # доля DELIVRD по активным строкам    
 make ch-shell        # интерактивный клиент ClickHouse
 ```
 
+**Опционально — Jira при падении smoke-теста:**
+```bash
+make smoke-test-with-jira   # если тест упал, заводит issue в Jira; иначе ничего не делает
+```
+Включается только если в `.env` заполнены `JIRA_*` (см. `.env.example`). Стек работает и без этого —
+интеграция не входит в `docker-compose.yml` и не нужна для запуска. Реальный `JIRA_API_TOKEN`
+держите только в локальном `.env` (он в `.gitignore`), не коммитьте.
+
 ---
 
 ## Генератор данных
@@ -288,6 +296,7 @@ docker compose exec superset superset import-dashboards -p /app/superset_project
 │   ├── register_db.py     build_dashboard.py   smoke_test.sh
 │   ├── analyze_data.py    ← DQ + описательная статистика
 │   ├── format_benchmark.py ← сравнение CSV/Parquet/Feather
+│   ├── jira_create_issue.py ← опционально: заводит Jira issue при падении smoke-теста
 │   └── test_generate.py   test_analyze.py      ← самопроверки без БД
 ├── superset/
 │   ├── Dockerfile   superset_config.py

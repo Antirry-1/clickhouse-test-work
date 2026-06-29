@@ -7,7 +7,7 @@ COMPOSE := docker compose
 
 .DEFAULT_GOAL := help
 .PHONY: help env up down clean reset rebuild ps logs init generate regenerate \
-        superset-init dashboard superset-export smoke-test rows period delivery-rate ch-shell open \
+        superset-init dashboard superset-export smoke-test smoke-test-with-jira rows period delivery-rate ch-shell open \
         lint analyze benchmark test analytics-sql
 
 help: ## Show this help
@@ -63,6 +63,16 @@ superset-export: ## Export the live Superset dashboard to git-tracked YAML (supe
 
 smoke-test: ## Verify the stack: containers up, ~1M rows, delivery-rate query works
 	bash scripts/smoke_test.sh
+
+smoke-test-with-jira: env ## Run smoke test; file a Jira issue if it fails (optional, needs JIRA_* in .env)
+	@mkdir -p reports
+	@set -o pipefail; \
+	  if bash scripts/smoke_test.sh 2>&1 | tee reports/smoke_test.log; then \
+	    echo "smoke test passed — no Jira issue created"; \
+	  else \
+	    python scripts/jira_create_issue.py --summary "SMS Operations smoke test failed" --file reports/smoke_test.log; \
+	    exit 1; \
+	  fi
 
 analytics-sql: ## Run dql/analytics_queries.sql + cohort_lifecycle.sql against ClickHouse (stack must be up)
 	@for f in dql/analytics_queries.sql dql/cohort_lifecycle.sql; do \
