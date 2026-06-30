@@ -8,7 +8,7 @@
 > [`docs/DESIGN.md`](docs/DESIGN.md). Руководство по проверке простым языком для нетехнического
 > ревьюера — в [`docs/HUMAN_CHECK.md`](docs/HUMAN_CHECK.md).
 
-![Дашборд SMS Operations](screenshots/sms_operations_dashboard.png)
+![Дашборд SMS Operations](screenshots/sms_operations_dashboard.png?v=2)
 
 ---
 
