@@ -1,6 +1,6 @@
 dashboard_title: SMS Operations
 description: null
-css: "/* ===== SMS Operations — тема «Operations Command Center» ===== */\n\n/* Холст: мягкая радиальная вуаль, чтобы карточки «парили» */\n.dashboard-content, .grid-content {\n  background: radial-gradient(1200px 620px at 50% -8%,\n    #F8FAFF 0%, #EDF1F8 55%, #E8EDF5 100%) !important;\n}\n\n/* Карточки графиков: скругление, тонкая рамка, многослойная тень, hover-lift */\n.dashboard-component-chart-holder {\n  background:#fff; border:1px solid #E6EAF2; border-radius:14px;\n  box-shadow:0 1px 2px rgba(16,24,40,.04), 0 12px 28px -16px rgba(16,24,40,.20);\n  transition:box-shadow .18s ease, transform .18s ease; overflow:hidden;\n}\n.dashboard-component-chart-holder:hover {\n  box-shadow:0 6px 14px rgba(16,24,40,.08), 0 22px 48px -20px rgba(16,24,40,.28);\n  transform:translateY(-2px);\n}\n.dashboard-component-chart-holder .header-title { font-weight:600; color:#0F172A; }\n\n/* BigNumber — центрируем и усиливаем число */\n.superset-legacy-chart-big-number { align-items:center; }\n.superset-legacy-chart-big-number .header-line {\n  justify-content:center; font-weight:700; color:#0F172A; }\n.superset-legacy-chart-big-number .subheader-line {\n  justify-content:center; color:#64748B; font-weight:500; }\n\n/* «Eyebrow»-заголовки секций вместо дефолтного h3.\n   Markdown-блоки секций несут тот же класс .dashboard-component-chart-holder, что и\n   графики (карточный стиль выше задел и их), но лежат внутри обёртки .dashboard-markdown.\n   Снимаем у них карточный фон/тень → заголовок «парит» на холсте, карточки графиков целы. */\n.dashboard-markdown .dashboard-component-chart-holder {\n  background:transparent !important; border:0 !important;\n  box-shadow:none !important; overflow:visible; }\n.dashboard-markdown .dashboard-component-chart-holder:hover {\n  transform:none; box-shadow:none !important; }\n.dashboard-markdown h3 {\n  margin:16px 0 2px; padding:0; border:0;\n  font:600 11px/1.5 'Inter', system-ui, sans-serif;\n  text-transform:uppercase; letter-spacing:.14em; color:#64748B;\n  display:flex; align-items:center; gap:10px;\n}\n.dashboard-markdown h3::before {\n  content:\"\"; width:12px; height:12px; border-radius:4px;\n  background:linear-gradient(135deg, #6366F1, #22D3EE);\n  box-shadow:0 2px 6px -1px #6366F166;\n}\n/* KPI-полоса North Star — приподнятые карточки с акцентом-порогом */\n.dashboard-chart-id-2 .dashboard-component-chart-holder, .dashboard-chart-id-3 .dashboard-component-chart-holder, .dashboard-chart-id-11 .dashboard-component-chart-holder, .dashboard-chart-id-12 .dashboard-component-chart-holder, .dashboard-chart-id-13 .dashboard-component-chart-holder { border-top:3px solid #6366F1; border-radius:16px;\n  box-shadow:0 1px 2px rgba(16,24,40,.04), 0 14px 34px -18px rgba(16,24,40,.22); }\n.dashboard-chart-id-2 .dashboard-component-chart-holder { border-top-color:#10B981; } /* выше = лучше */\n.dashboard-chart-id-11 .dashboard-component-chart-holder { border-top-color:#F43F5E; } /* выше = хуже */"
+css: "/* ===== SMS Operations — тема «Operations Command Center» ===== */\n\n/* Холст: мягкая радиальная вуаль, чтобы карточки «парили» */\n.dashboard-content, .grid-content {\n  background: radial-gradient(1200px 620px at 50% -8%,\n    #F8FAFF 0%, #EDF1F8 55%, #E8EDF5 100%) !important;\n}\n\n/* Карточки графиков: скругление, тонкая рамка, многослойная тень, hover-lift */\n.dashboard-component-chart-holder {\n  background:#fff; border:1px solid #E6EAF2; border-radius:14px;\n  box-shadow:0 1px 2px rgba(16,24,40,.04), 0 12px 28px -16px rgba(16,24,40,.20);\n  transition:box-shadow .18s ease, transform .18s ease; overflow:hidden;\n}\n.dashboard-component-chart-holder:hover {\n  box-shadow:0 6px 14px rgba(16,24,40,.08), 0 22px 48px -20px rgba(16,24,40,.28);\n  transform:translateY(-2px);\n}\n.dashboard-component-chart-holder .header-title { font-weight:600; color:#0F172A; }\n\n/* BigNumber — центрируем и усиливаем число */\n.superset-legacy-chart-big-number { align-items:center; }\n.superset-legacy-chart-big-number .header-line {\n  justify-content:center; font-weight:700; color:#0F172A; }\n.superset-legacy-chart-big-number .subheader-line {\n  justify-content:center; color:#64748B; font-weight:500; }\n\n/* «Eyebrow»-заголовки секций вместо дефолтного h3.\n   Markdown-блоки секций несут тот же класс .dashboard-component-chart-holder, что и\n   графики (карточный стиль выше задел и их), но лежат внутри обёртки .dashboard-markdown.\n   Снимаем у них карточный фон/тень → заголовок «парит» на холсте, карточки графиков целы. */\n.dashboard-markdown .dashboard-component-chart-holder {\n  background:transparent !important; border:0 !important;\n  box-shadow:none !important; overflow:visible; }\n.dashboard-markdown .dashboard-component-chart-holder:hover {\n  transform:none; box-shadow:none !important; }\n.dashboard-markdown h3 {\n  margin:16px 0 2px; padding:0; border:0;\n  font:600 11px/1.5 'Inter', system-ui, sans-serif;\n  text-transform:uppercase; letter-spacing:.14em; color:#64748B;\n  display:flex; align-items:center; gap:10px;\n}\n.dashboard-markdown h3::before {\n  content:\"\"; width:12px; height:12px; border-radius:4px;\n  background:linear-gradient(135deg, #6366F1, #22D3EE);\n  box-shadow:0 2px 6px -1px #6366F166;\n}\n/* KPI-полоса North Star — приподнятые карточки с акцентом-порогом */\n.dashboard-chart-id-2.dashboard-component-chart-holder, .dashboard-chart-id-3.dashboard-component-chart-holder, .dashboard-chart-id-11.dashboard-component-chart-holder, .dashboard-chart-id-12.dashboard-component-chart-holder, .dashboard-chart-id-13.dashboard-component-chart-holder { border-top:3px solid #6366F1; border-radius:16px;\n  box-shadow:0 1px 2px rgba(16,24,40,.04), 0 14px 34px -18px rgba(16,24,40,.22); }\n.dashboard-chart-id-2.dashboard-component-chart-holder { border-top-color:#10B981; } /* выше = лучше */\n.dashboard-chart-id-11.dashboard-component-chart-holder { border-top-color:#F43F5E; } /* выше = хуже */\n.grid-row:has(.dashboard-chart-id-12), .grid-row:has(.dashboard-chart-id-13) { justify-content:center; }"
 slug: sms_operations
 certified_by: null
 certification_details: null
@@ -21,14 +21,15 @@ position:
     children:
     - HEADER-0
     - ROW-0
-    - HEADER-1
     - ROW-1
-    - HEADER-2
+    - HEADER-1
     - ROW-2
-    - HEADER-3
+    - HEADER-2
     - ROW-3
-    - HEADER-cohort
+    - HEADER-3
     - ROW-4
+    - HEADER-cohort
+    - ROW-5
   HEADER_ID:
     type: HEADER
     id: HEADER_ID
@@ -57,15 +58,13 @@ position:
     - CHART-2
     - CHART-3
     - CHART-11
-    - CHART-12
-    - CHART-13
   CHART-2:
     type: CHART
     id: CHART-2
     meta:
       chartId: 2
-      width: 3
-      height: 50
+      width: 4
+      height: 24
       sliceName: Delivery rate
     parents:
     - ROOT_ID
@@ -77,8 +76,8 @@ position:
     id: CHART-3
     meta:
       chartId: 3
-      width: 3
-      height: 50
+      width: 4
+      height: 24
       sliceName: Revenue (total)
     parents:
     - ROOT_ID
@@ -90,39 +89,50 @@ position:
     id: CHART-11
     meta:
       chartId: 11
-      width: 3
-      height: 50
+      width: 4
+      height: 24
       sliceName: Failed rate
     parents:
     - ROOT_ID
     - GRID_ID
     - ROW-0
     children: []
+  ROW-1:
+    type: ROW
+    id: ROW-1
+    meta:
+      background: BACKGROUND_TRANSPARENT
+    parents:
+    - ROOT_ID
+    - GRID_ID
+    children:
+    - CHART-12
+    - CHART-13
   CHART-12:
     type: CHART
     id: CHART-12
     meta:
       chartId: 12
-      width: 3
-      height: 50
+      width: 4
+      height: 24
       sliceName: Avg delivery time
     parents:
     - ROOT_ID
     - GRID_ID
-    - ROW-0
+    - ROW-1
     children: []
   CHART-13:
     type: CHART
     id: CHART-13
     meta:
       chartId: 13
-      width: 3
-      height: 50
+      width: 4
+      height: 24
       sliceName: Cost per delivered
     parents:
     - ROOT_ID
     - GRID_ID
-    - ROW-0
+    - ROW-1
     children: []
   HEADER-1:
     type: MARKDOWN
@@ -135,9 +145,9 @@ position:
     - ROOT_ID
     - GRID_ID
     children: []
-  ROW-1:
+  ROW-2:
     type: ROW
-    id: ROW-1
+    id: ROW-2
     meta:
       background: BACKGROUND_TRANSPARENT
     parents:
@@ -157,7 +167,7 @@ position:
     parents:
     - ROOT_ID
     - GRID_ID
-    - ROW-1
+    - ROW-2
     children: []
   CHART-6:
     type: CHART
@@ -170,7 +180,7 @@ position:
     parents:
     - ROOT_ID
     - GRID_ID
-    - ROW-1
+    - ROW-2
     children: []
   HEADER-2:
     type: MARKDOWN
@@ -183,9 +193,9 @@ position:
     - ROOT_ID
     - GRID_ID
     children: []
-  ROW-2:
+  ROW-3:
     type: ROW
-    id: ROW-2
+    id: ROW-3
     meta:
       background: BACKGROUND_TRANSPARENT
     parents:
@@ -207,7 +217,7 @@ position:
     parents:
     - ROOT_ID
     - GRID_ID
-    - ROW-2
+    - ROW-3
     children: []
   CHART-9:
     type: CHART
@@ -220,7 +230,7 @@ position:
     parents:
     - ROOT_ID
     - GRID_ID
-    - ROW-2
+    - ROW-3
     children: []
   CHART-10:
     type: CHART
@@ -233,7 +243,7 @@ position:
     parents:
     - ROOT_ID
     - GRID_ID
-    - ROW-2
+    - ROW-3
     children: []
   CHART-7:
     type: CHART
@@ -246,7 +256,7 @@ position:
     parents:
     - ROOT_ID
     - GRID_ID
-    - ROW-2
+    - ROW-3
     children: []
   HEADER-3:
     type: MARKDOWN
@@ -259,9 +269,9 @@ position:
     - ROOT_ID
     - GRID_ID
     children: []
-  ROW-3:
+  ROW-4:
     type: ROW
-    id: ROW-3
+    id: ROW-4
     meta:
       background: BACKGROUND_TRANSPARENT
     parents:
@@ -281,7 +291,7 @@ position:
     parents:
     - ROOT_ID
     - GRID_ID
-    - ROW-3
+    - ROW-4
     children: []
   CHART-5:
     type: CHART
@@ -294,7 +304,7 @@ position:
     parents:
     - ROOT_ID
     - GRID_ID
-    - ROW-3
+    - ROW-4
     children: []
   HEADER-cohort:
     type: MARKDOWN
@@ -307,9 +317,9 @@ position:
     - ROOT_ID
     - GRID_ID
     children: []
-  ROW-4:
+  ROW-5:
     type: ROW
-    id: ROW-4
+    id: ROW-5
     meta:
       background: BACKGROUND_TRANSPARENT
     parents:
@@ -328,7 +338,7 @@ position:
     parents:
     - ROOT_ID
     - GRID_ID
-    - ROW-4
+    - ROW-5
     children: []
 metadata:
   native_filter_configuration:

@@ -59,6 +59,7 @@ superset-export: ## Export the live Superset dashboard to git-tracked YAML (supe
 	rm -rf superset/import_bundle && mkdir -p superset/import_bundle
 	cd superset/import_bundle && unzip -o -q /tmp/sms_dash.zip && \
 	  top=$$(ls -d */ | head -1) && mv "$$top"* . && rmdir "$$top"
+	python3 scripts/clean_export.py   # срезаем ряд-дубль, который экспортёр Superset дописывает в position
 	@echo "Exported to superset/import_bundle/"
 
 smoke-test: ## Verify the stack: containers up, ~1M rows, delivery-rate query works

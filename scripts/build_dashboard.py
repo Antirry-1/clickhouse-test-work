@@ -302,8 +302,8 @@ def position_json(chart_ids, cohort_chart_id=None):
     # несколькими рядами графиков. Каждый график отвечает на вопрос роли (Dashboard Canvas №2/№4).
     sections = [
         ("KPIs / North Star",
-         [["Delivery rate", "Revenue (total)", "Failed rate",
-           "Avg delivery time", "Cost per delivered"]]),
+         [["Delivery rate", "Revenue (total)", "Failed rate"],
+          ["Avg delivery time", "Cost per delivered"]]),
         ("Trends",
          [["SMS by day", "Revenue by currency"]]),
         ("Health by segment",
@@ -327,13 +327,18 @@ def position_json(chart_ids, cohort_chart_id=None):
             layout[row_id] = {"type": "ROW", "id": row_id,
                               "meta": {"background": "BACKGROUND_TRANSPARENT"},
                               "parents": ["ROOT_ID", "GRID_ID"], "children": []}
-            width = max(3, 12 // len(row))
+            row_width = max(3, 12 // len(row))
             for name in row:
                 cid = chart_ids[name]
                 comp = f"CHART-{cid}"
                 layout[row_id]["children"].append(comp)
+                # KPI 3+2: короткие карточки (та же суммарная высота, что и один ряд → влезает
+                # на экран), фикс. ширина 4 → нижний ряд из 2 карточек центрируется под 3 (CSS).
+                is_kpi = name in KPI_ALL
+                width = 4 if is_kpi else row_width
+                height = 24 if is_kpi else 50
                 layout[comp] = {"type": "CHART", "id": comp,
-                                "meta": {"chartId": cid, "width": width, "height": 50,
+                                "meta": {"chartId": cid, "width": width, "height": height,
                                          "sliceName": name},
                                 "parents": ["ROOT_ID", "GRID_ID", row_id], "children": []}
     # Когортная секция (один широкий heatmap) — добавляется, только если чарт создан.
@@ -391,8 +396,8 @@ def dashboard_css(chart_ids):
     цвет осей CSS-ом не перекрасить, поэтому светлая тема — единственный надёжный путь)."""
     t = THEME
 
-    def sel(name):  # акцент кладём на видимую карточку (внутренний holder)
-        return f".dashboard-chart-id-{chart_ids[name]} .dashboard-component-chart-holder"
+    def sel(name):  # класс .dashboard-chart-id-N лежит НА самом holder'е → составной селектор
+        return f".dashboard-chart-id-{chart_ids[name]}.dashboard-component-chart-holder"
 
     parts = [f"""\
 /* ===== SMS Operations — тема «Operations Command Center» ===== */
@@ -454,6 +459,12 @@ def dashboard_css(chart_ids):
             parts.append(f"{sel(KPI_GOOD)} {{ border-top-color:{t['good']}; }} /* выше = лучше */")
         if KPI_BAD in chart_ids:
             parts.append(f"{sel(KPI_BAD)} {{ border-top-color:{t['bad']}; }} /* выше = хуже */")
+        # Нижний ряд KPI (2 карточки шир. 4) центрируем под верхними тремя — «пирамида».
+        bottom_ids = [chart_ids[n] for n in ("Avg delivery time", "Cost per delivered")
+                      if n in chart_ids]
+        if bottom_ids:
+            rowsel = ", ".join(f".grid-row:has(.dashboard-chart-id-{i})" for i in bottom_ids)
+            parts.append(f"{rowsel} {{ justify-content:center; }}")
     return "\n".join(parts)
 
 
